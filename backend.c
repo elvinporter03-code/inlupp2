@@ -21,6 +21,7 @@ struct S {
     ioopm_list_t locations;
 };
 
+
 static size_t string_knr_hash(elem_t key)
 {
   const char *str = key.s;
@@ -51,7 +52,13 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
     ioopm_hash_table_destroy(htsl);
 }
 
-void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize);
+// Skapar merch_t med stock = 0 och stoppar in det i htn
+void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize) {
+    // skapa en merch_t
+}
+
+
+
 void list_merchandise(ioopm_hash_table_t *ht_n);
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name);
 void edit_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize);
