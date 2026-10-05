@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -std=c11 -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -g
 
 # Alla .c-filer utom backend.c (som har main)
 SHARED = linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
