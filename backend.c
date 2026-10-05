@@ -41,10 +41,6 @@ static bool string_compare(elem_t str1, elem_t str2)
   return strcmp(string1, string2) == 0;
 }
 
-void constructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
-    htn = ioopm_hash_table_create(string_knr_hash, string_compare);
-    htsl = ioopm_hash_table_create(string_knr_hash, string_compare);
-}
 
 void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
     ioopm_hash_table_destroy(htn);
@@ -67,12 +63,12 @@ size_t calc_costs(ioopm_hash_table_t *cart);
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
     while(true){
         char *ans = ask_question_string("Välj ett menyalternativ \n");
-        printf("fungerar wohoo %s \n", ans);
-        if(is_menu_letter(ans)){
+        printf("fungerar whoo %s \n", ans);
             to_upper_case(ans);
             switch(ans[0]){
                 case 'A': 
                 case 'L':
+                //här kommer jag skirva kod
                 case 'D':
                 case 'E':
                 case 'S':
@@ -84,14 +80,12 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
                 case '=':
                 case 'O':
             }
-        }
     }
 }
 
 int main(){
-    ioopm_hash_table_t *ht_n;
-    ioopm_hash_table_t *ht_sl;
-    constructor(ht_n, ht_sl);
+    ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
+    ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
 
     main_loop(ht_n, ht_sl);
 
