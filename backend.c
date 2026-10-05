@@ -38,16 +38,14 @@ static bool string_compare(elem_t str1, elem_t str2)
   return strcmp(string1, string2) == 0;
 }
 
-void constructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl, ioopm_hash_table_t *ht_sc){
+void constructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
     htn = ioopm_hash_table_create(string_knr_hash, string_compare);
     htsl = ioopm_hash_table_create(string_knr_hash, string_compare);
-    ht_sc = ioopm_hash_table_create(string_knr_hash, string_compare);
 }
 
-void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl, ioopm_hash_table_t *ht_sc){
+void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
     ioopm_hash_table_destroy(htn);
     ioopm_hash_table_destroy(htsl);
-    ioopm_hash_table_destroy(ht_sc);
 }
 
 void main_loop(){
@@ -57,11 +55,10 @@ void main_loop(){
 int main(){
     ioopm_hash_table_t *ht_n;
     ioopm_hash_table_t *ht_sl;
-    ioopm_hash_table_t *ht_sc;
-    constructor(ht_n, ht_sl, ht_sc);
+    constructor(ht_n, ht_sl);
 
     main_loop();
-    
-    destructor(ht_n, ht_sl, ht_sc);
+
+    destructor(ht_n, ht_sl); //shoppingcarts
     return 0;
 }
