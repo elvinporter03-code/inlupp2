@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COMMON_H
+#define COMMON_H
+
 #include <stddef.h>
 #include <stdbool.h>
 
@@ -14,7 +16,7 @@ typedef bool ioopm_eq_function(elem_t a, elem_t b);
 typedef size_t ioopm_hash_function(elem_t key);
 
 union element {
-  void *s;
+  char *s;
   int i;
   bool b;
   void *p;
@@ -36,3 +38,5 @@ struct hash_table
   ioopm_hash_function *hash;    // Function to hash the desired kind of key  
   ioopm_eq_function *is_equal;  // Function to check if the desired kind of key is equal to another
 };
+
+#endif

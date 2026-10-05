@@ -1,5 +1,5 @@
 #pragma once
-#include "hash_table3.h"
+#include "hash_table.h"
 /**
 * @file hash_table_iterator.h
 * @author Elvin Porter & Anton Äng
