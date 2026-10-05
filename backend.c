@@ -86,21 +86,27 @@ void list_merchandise(ioopm_hash_table_t *ht_n){
         result[i] = it->current_entry->key.s;
         i++;
     }
-    for(int i = 0; i < ht_n->ht_size / 20; i++){
-        if(i % 20 == 0 && i > 0){
-            char *ans = ask_question_string("Vill du fortsätta lista items? (Y/N)\n");
+    while(i >= 0){
+        printf("%s \n", result[i]);
+        i--;
+        if(i % 20 == 0){
+            char *ans = ask_question_string("Vill du fortsätta? (Y/N)\n");
             to_upper_case(ans);
-            if(ans[0] != 'Y'){
+            if(ans != 'Y'){
                 return;
             }
         }
-        print
     }
 }
 
 
 
-void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name);
+void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name){
+    ioopm_list_t locations;
+    ioopm_hash_table_lookup(ht_n, string_elem(name), &locations);
+}
+
+
 void edit_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize);
 void show_stock(ioopm_hash_table_t *ht_n, char *name);
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf);
@@ -119,8 +125,16 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
             switch(ans[0]){
                 case 'A': 
                 case 'L':
-                char **merch = list_merchandise(ht_n);
+                    list_merchandise(ht_n);
+
                 case 'D':
+                    char *name = ask_question_string("Vilket item vill du ta bort? \n");
+                    char *ans = ask_question_string("Säker? (Y/N) \n");
+                    to_upper_case(ans);
+                    if(ans == 'Y'){
+                        remove_merchandise(ht_n, ht_sl, *name);
+                    }
+
                 case 'E':
                 case 'S':
                 case 'P':
