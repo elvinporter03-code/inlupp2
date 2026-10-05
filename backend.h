@@ -3,7 +3,7 @@
 
 /// @brief adds merchandise to db without increasing stock
 // Skapar merch_t med stock = 0 och stoppar in det i htn
-/// @param ht_n the db operated on
+/// @param ht_n the db operated upon
 /// @param name the name of the item
 /// @param desc a description of the item
 /// @param prize the price of the item
@@ -11,13 +11,13 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
 
 /// @brief Listar alla items 
 // Itererar genom alla items och skriver ut dessa i terminalen i batches om max 20, sedan får användaren välja att fortsätta eller sluta
-/// @param ht_n the db operated on
+/// @param ht_n the db operated upon
 void list_merchandise(ioopm_hash_table_t *ht_n);
 
 /// @brief Removes merchandise completely from db
 // Loopar igenom alla locations med itemet och removear det, och sedan från htn också
-/// @param ht_n the db operated on
-/// @param ht_sl the db operated on
+/// @param ht_n the db operated upon
+/// @param ht_sl the db operated upon
 /// @param name 
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name);
 
