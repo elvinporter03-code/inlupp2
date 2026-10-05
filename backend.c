@@ -51,6 +51,7 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
 // Skapar merch_t med stock = 0 och stoppar in det i htn
 void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize) {
     // skapa en merch_t
+    // nej 
 }
 
 
@@ -75,7 +76,6 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
             switch(ans[0]){
                 case 'A': 
                 case 'L':
-                //här kommer jag skirva kod
                 case 'D':
                 case 'E':
                 case 'S':
