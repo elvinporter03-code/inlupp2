@@ -15,6 +15,7 @@ typedef union element elem_t;
 typedef bool ioopm_eq_function(elem_t a, elem_t b);
 typedef size_t ioopm_hash_function(elem_t key);
 
+
 union element {
   char *s;
   int i;

@@ -2,7 +2,7 @@
 #include "common.h"
 #include "hash_table_iterator.h"
 #include "linked_list.h"
-
+#include "utils.h"
 typedef struct merchandise merch_t;
 typedef struct S s_t;
 
