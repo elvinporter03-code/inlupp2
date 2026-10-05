@@ -1,10 +1,12 @@
-#include <stdbool.h>
 #include "common.h"
 #include "hash_table_iterator.h"
 #include "linked_list.h"
 #include "utils.h"
+
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct merchandise merch_t;
 typedef struct S s_t;
@@ -48,10 +50,32 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
     ioopm_hash_table_destroy(htsl);
 }
 
+// skapar en S:
+s_t *S_create(char *name, char *desc, size_t price) {
+    // skapar merch 
+    merch_t *merch = calloc(1, sizeof(merch_t));
+    merch->name = name;
+    merch->desc = desc;
+    merch->price = price;
+
+    // skapar S med merch och null
+    s_t *S = calloc(1, sizeof(s_t));
+    S->item = merch;
+
+    return S;
+}
+
 // Skapar merch_t med stock = 0 och stoppar in det i htn
-void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize) {
-    // skapa en merch_t
-    // nej 
+void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price) {
+    // skapa en S
+    s_t *item = S_create(name, desc, price);
+
+    // lägg in den i ht_n med name som nyckel ger felmeddelande om den redan finns
+    bool new = ioopm_hash_table_insert(ht_n, name, item); // måste lägga in s_t i elem_t
+    if (!new) {
+        printf("%s already exists \n", name);
+    }
+
 }
 
 

@@ -12,6 +12,8 @@
 typedef struct entry entry_t;
 typedef struct hash_table ioopm_hash_table_t;
 typedef union element elem_t;
+typedef struct merchandise merch_t;
+typedef struct S s_t;
 typedef bool ioopm_eq_function(elem_t a, elem_t b);
 typedef size_t ioopm_hash_function(elem_t key);
 
@@ -38,6 +40,18 @@ struct hash_table
   size_t ht_size;               // holds the amount of entries for O(1) lookup
   ioopm_hash_function *hash;    // Function to hash the desired kind of key  
   ioopm_eq_function *is_equal;  // Function to check if the desired kind of key is equal to another
+};
+
+struct merchandise {
+    int stock;
+    int price;
+    char *desc;
+    char *name;
+};
+
+struct S {
+    merch_t item;
+    ioopm_list_t locations;
 };
 
 #endif
