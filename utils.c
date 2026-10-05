@@ -5,6 +5,20 @@
 #include <stdlib.h>
 #include "utils.h"
 
+
+static answer_t convert_int(char *s) {
+    answer_t a;
+    a.int_value = atoi(s);
+    return a;
+}
+
+static answer_t convert_str(char *s) {
+    answer_t a;
+    a.string_value = strdup(s);
+    return a;
+}
+
+
 // kollar så att en inskickad sträng är ett tal, check-funktion för is_question_int.
 // konverterar negativa tal till positiva. returnerar ett positivt tal.
 bool is_number(char *str)
@@ -47,7 +61,7 @@ bool not_empty(char *str)
 // skickar ut en fråga i terminalen och returnerar ett positivt heltal den får som input.
 int ask_question_int(char *question)
 {
-  answer_t answer = ask_question(question, is_number, (convert_func *) atoi);
+  answer_t answer = ask_question(question, is_number, (convert_func *) convert_int);
   return answer.int_value;
 }
 
@@ -80,7 +94,7 @@ int read_string(char *buf, int buf_siz)
 // skickar ut en fråga i terminalen och returnerar den sträng den får som input.
 char *ask_question_string(char *question)
 {
-  return ask_question(question, not_empty, (convert_func *) strdup).string_value;
+  return ask_question(question, not_empty, (convert_func *) convert_str).string_value;
 }
 
 // skalfunktion som genererar en fråga, tar in input, 
@@ -123,9 +137,9 @@ bool is_shelf(char *str)
 // skickar ut en fråga i terminalen och returnerar ett shelf i form av en sträng den får som input.
 char *ask_question_shelf(char *question)
 {
-    return ask_question(question, is_shelf, (convert_func *) strdup).string_value;
+    return ask_question(question, is_shelf, (convert_func *) convert_str).string_value;
 }
-
+/* Utkommenterad för att kompilatorn klagar på den
 // hjälpfunktion till ask_question_char 
 bool is_char(char *str)
 {
@@ -140,7 +154,7 @@ char ask_question_char(char *question)
 {
     return ask_question(question, is_char, (convert_func *) strdup).character;
 }
-
+*/
 // check-funktion till ask_question_menu som kollar att inputsträngen innehåller:
 // ett tecken som ingår i "LlTtRrGgHhAa".
 bool is_menu_letter(char *str)

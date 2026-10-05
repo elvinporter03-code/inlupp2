@@ -1,28 +1,12 @@
 #include "common.h"
 #include "hash_table_iterator.h"
-#include "linked_list.h"
+#include "list_iterator.h"
 #include "utils.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-typedef struct merchandise merch_t;
-typedef struct S s_t;
-
-struct merchandise {
-    int stock;
-    int price;
-    char *desc;
-    char *name;
-};
-
-struct S {
-    merch_t item;
-    ioopm_list_t locations;
-};
-
 
 static size_t string_knr_hash(elem_t key)
 {
@@ -64,7 +48,7 @@ s_t *S_create(char *name, char *desc, size_t price) {
 
     return S;
 }
-
+/*
 // Skapar merch_t med stock = 0 och stoppar in det i htn
 void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price) {
     // skapa en S
@@ -77,6 +61,7 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     }
 
 }
+    */
 
 void list_merchandise(ioopm_hash_table_t *ht_n){
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
@@ -92,7 +77,7 @@ void list_merchandise(ioopm_hash_table_t *ht_n){
         if(i % 20 == 0){
             char *ans = ask_question_string("Vill du fortsätta? (Y/N)\n");
             to_upper_case(ans);
-            if(ans != 'Y'){
+            if(ans[0] != 'Y'){
                 return;
             }
         }
@@ -102,8 +87,17 @@ void list_merchandise(ioopm_hash_table_t *ht_n){
 
 
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name){
-    ioopm_list_t locations;
-    ioopm_hash_table_lookup(ht_n, string_elem(name), &locations);
+    elem_t item;
+    ioopm_hash_table_lookup(ht_n, string_elem(name), &item);
+    s_t *item_s = item.p;
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(item_s->locations);
+    elem_t tmp;
+    while(!ioopm_list_iterator_at_end(it)){
+        ioopm_hash_table_remove(ht_sl, ioopm_list_iterator_current(it), &tmp);
+        ioopm_list_iterator_advance(it);
+    }
+    ioopm_hash_table_remove(ht_n, string_elem(name), &item);
+    
 }
 
 
@@ -120,30 +114,53 @@ size_t calc_costs(ioopm_hash_table_t *cart);
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
     while(true){
         char *ans = ask_question_string("Välj ett menyalternativ \n");
-        printf("fungerar whoo %s \n", ans);
+        printf("%s \n", ans);
             to_upper_case(ans);
             switch(ans[0]){
                 case 'A': 
+                    puts("Du tryckte a");
+                    break;
                 case 'L':
                     list_merchandise(ht_n);
-
+                    break;
                 case 'D':
                     char *name = ask_question_string("Vilket item vill du ta bort? \n");
                     char *ans = ask_question_string("Säker? (Y/N) \n");
                     to_upper_case(ans);
-                    if(ans == 'Y'){
-                        remove_merchandise(ht_n, ht_sl, *name);
+                    if(ans[0] == 'Y'){
+                        remove_merchandise(ht_n, ht_sl, name);
                     }
-
+                    break;
                 case 'E':
+                break;
+
                 case 'S':
+                break;
+
                 case 'P':
+                break;
+
                 case 'C':
+                break;
+
                 case 'R':
+                break;
+
                 case '+':
+                break;
+
                 case '-':
+                break;
+
                 case '=':
+                break;
+
                 case 'O':
+                break;
+
+                default:
+                return;
+                break;
             }
     }
 }

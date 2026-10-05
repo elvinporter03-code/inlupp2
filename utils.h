@@ -33,7 +33,7 @@ bool not_empty(char *str);
 bool is_shelf(char *str);
 char *ask_question_shelf(char *question);
 bool is_char(char *str);
-char ask_question_char(char *question);
+//char ask_question_char(char *question);
 bool is_menu_letter(char *str);
 answer_t to_upper_case(char *letter);
 answer_t ask_question(char *question, check_func *check, convert_func *convert);

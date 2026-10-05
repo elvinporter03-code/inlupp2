@@ -16,7 +16,7 @@ clean:
 	rm -f app tests
 
 run: app
-	./app
+	./app < test.txt
 
 test: tests
 	./tests
