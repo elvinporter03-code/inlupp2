@@ -54,9 +54,28 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     // nej 
 }
 
+void list_merchandise(ioopm_hash_table_t *ht_n){
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
+    char *result[ht_n->ht_size];
+    int i = 0;
+    while(!ioopm_hash_table_iterator_at_end(it)){
+        result[i] = it->current_entry->key.s;
+        i++;
+    }
+    for(int i = 0; i < ht_n->ht_size / 20; i++){
+        if(i % 20 == 0 && i > 0){
+            char *ans = ask_question_string("Vill du fortsätta lista items? (Y/N)\n");
+            to_upper_case(ans);
+            if(ans[0] != 'Y'){
+                return;
+            }
+        }
+        print
+    }
+}
 
 
-void list_merchandise(ioopm_hash_table_t *ht_n);
+
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name);
 void edit_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize);
 void show_stock(ioopm_hash_table_t *ht_n, char *name);
@@ -76,6 +95,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
             switch(ans[0]){
                 case 'A': 
                 case 'L':
+                char **merch = list_merchandise(ht_n);
                 case 'D':
                 case 'E':
                 case 'S':
