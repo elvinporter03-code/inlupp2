@@ -16,8 +16,8 @@ void list_merchandise(ioopm_hash_table_t *ht_n);
 
 /// @brief Removes merchandise completely from db
 // Loopar igenom alla locations med itemet och removear det, och sedan från htn också
-/// @param ht_n 
-/// @param ht_sl 
+/// @param ht_n the db operated on
+/// @param ht_sl the db operated on
 /// @param name 
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name);
 
