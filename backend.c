@@ -129,16 +129,6 @@ static void *destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name){
 }
 
 
-Loopar igenom alla locations med itemet och removear det, och sedan från htn också
-void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name) {
-    // hämta item
-    // gå igenom locations och plocka bort dem ur ht_sl
-    // ta bort item från ht_n
-    // frigör item mha free_S
-}
-
-
-
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name){
 
     s_t *item_s = lookup_htn(ht_n, name);
