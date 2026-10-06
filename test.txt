@@ -2,9 +2,15 @@ A
 Bok
 En mycket spännande bok
 150
+L
 A
 Flaska
-Flaska med saft
+En flaska med saft
 67
 L
+D
+Bok
+Y
+L
+Q
 

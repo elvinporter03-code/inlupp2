@@ -102,11 +102,13 @@ void list_merchandise(ioopm_hash_table_t *ht_n){
     while(!ioopm_hash_table_iterator_at_end(it)){
         result[i] = it->current_entry->key.s;
         i++;
+        ioopm_hash_table_iterator_advance(it);
     }
-    while(i >= 0){
-        printf("%s \n", result[i]);
-        i--;
-        if(i % 20 == 0){
+    int n = 0;
+    while(n < i){
+        printf("%s \n", result[n]);
+        n++;
+        if(n % 20 == 0){
             char *ans = ask_question_string("Vill du fortsätta? (Y/N)\n");
             to_upper_case(ans);
             if(ans[0] != 'Y'){
@@ -204,7 +206,8 @@ size_t calc_costs(ioopm_hash_table_t *cart);
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
     char *name;
     char *desc;
-    while(true){
+    bool running = true;
+    while(running){
         char *ans = ask_question_string("Välj ett menyalternativ \n");
         printf("%s \n", ans);
             to_upper_case(ans);
@@ -259,9 +262,13 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
 
                 case 'O':
                 break;
+                
+                case 'Q':
+                    running = false;
+                break;
 
                 default:
-                return;
+                    running = false;
                 break;
             }
     }
