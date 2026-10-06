@@ -77,7 +77,7 @@ static s_t *S_create(char *name, char *desc, size_t price) {
     // skapar S med merch och null
     s_t *S = calloc(1, sizeof(s_t));
     S->item = merch;
-
+    S->locations = ioopm_list_create();
     return S;
 }
 
@@ -134,17 +134,26 @@ static loc_pair_t *list_fetch(ioopm_list_iterator_t *it){
 
 
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name){
+    elem_t tmp;
 
     s_t *item_s = lookup_htn(ht_n, name);
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(item_s->locations);
-    elem_t tmp;
-    while(!ioopm_list_iterator_at_end(it)){
-        ioopm_hash_table_remove(ht_sl, ioopm_list_iterator_current(it), &tmp);
-        ioopm_list_iterator_advance(it);
+    printf("Lyckades hitta %s", item_s->item->name);
+    ioopm_list_t *l = item_s->locations;
+    if(!ioopm_list_is_empty(l)){
+        puts("Lyckades casta om listan");
+        ioopm_list_iterator_t *it = ioopm_list_iterator_create(l);
+        puts("Lyckades skapa iteratorn");
+        while(!ioopm_list_iterator_at_end(it)){
+            ioopm_hash_table_remove(ht_sl, ioopm_list_iterator_current(it), &tmp);
+            puts("Lyckades ta bort från htsl");
+            ioopm_list_iterator_advance(it);
+        }
+        ioopm_list_iterator_destroy(it);
     }
     destroy_entry_htn(ht_n, name);
+    puts("Lyckades ta bort thn-entryn");
     ioopm_hash_table_remove(ht_n, string_elem(name), &tmp);
-    ioopm_list_iterator_destroy(it);
+    puts("Lyckades ta bort från htn");
 }
 
 
