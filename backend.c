@@ -137,23 +137,17 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
     elem_t tmp;
 
     s_t *item_s = lookup_htn(ht_n, name);
-    printf("Lyckades hitta %s", item_s->item->name);
     ioopm_list_t *l = item_s->locations;
     if(!ioopm_list_is_empty(l)){
-        puts("Lyckades casta om listan");
         ioopm_list_iterator_t *it = ioopm_list_iterator_create(l);
-        puts("Lyckades skapa iteratorn");
         while(!ioopm_list_iterator_at_end(it)){
             ioopm_hash_table_remove(ht_sl, ioopm_list_iterator_current(it), &tmp);
-            puts("Lyckades ta bort från htsl");
             ioopm_list_iterator_advance(it);
         }
         ioopm_list_iterator_destroy(it);
     }
     destroy_entry_htn(ht_n, name);
-    puts("Lyckades ta bort thn-entryn");
     ioopm_hash_table_remove(ht_n, string_elem(name), &tmp);
-    puts("Lyckades ta bort från htn");
 }
 
 
@@ -175,18 +169,19 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     to_insert->item = tmp;
     to_insert->locations = locs;
 
-    if(string_compare(string_elem(name_new), string_elem(name_old))){
+    if(!string_compare(string_elem(name_new), string_elem(name_old))){
         // tar bort alla instanser av den gamla varan utifall namnet ändrats
         elem_t tmp;
         ioopm_hash_table_remove(ht_n, string_elem(name_old), &tmp);
-
-        // Uppdaterar varje shelf med den gamla varan med den nya utifall namnet ändrats
-        ioopm_list_iterator_t *it = ioopm_list_iterator_create(locs); 
-        while(!ioopm_list_iterator_at_end(it)){
-            ioopm_hash_table_insert(ht_sl, ioopm_list_iterator_current(it), string_elem(name_new));
-            ioopm_list_iterator_advance(it);
+        if(!ioopm_list_is_empty(locs)){
+            // Uppdaterar varje shelf med den gamla varan med den nya utifall namnet ändrats
+            ioopm_list_iterator_t *it = ioopm_list_iterator_create(locs); 
+            while(!ioopm_list_iterator_at_end(it)){
+                ioopm_hash_table_insert(ht_sl, ioopm_list_iterator_current(it), string_elem(name_new));
+                ioopm_list_iterator_advance(it);
+            }
+            ioopm_list_iterator_destroy(it);
         }
-        ioopm_list_iterator_destroy(it);
     }
     // Uppdaterar eller sätter in nya beroende på om namnet ändrats
     ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert)); 

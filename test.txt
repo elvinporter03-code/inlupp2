@@ -12,5 +12,12 @@ D
 Bok
 Y
 L
+E
+Flaska
+Flarran
+En flarra med saft
+76
+Y
+L
 Q
 
