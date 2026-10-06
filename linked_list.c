@@ -5,23 +5,6 @@
 #include <stdio.h>
 #include "common.h"
 
-// Typedef ska vara efter struct
-typedef struct list ioopm_list_t;
-typedef struct list_node ioopm_list_node_t;
-
-struct list
-{
-    ioopm_list_node_t *first;
-    ioopm_list_node_t *last;
-    size_t size;
-};
-
-struct list_node
-{
-    elem_t head;
-    ioopm_list_node_t *tail;
-};
-
 ioopm_list_t *ioopm_list_create(void)
 {
     return calloc(1, sizeof(ioopm_list_t));

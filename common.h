@@ -8,12 +8,16 @@
 #define bool_elem(x)  ((elem_t) { .b = (x) })
 #define string_elem(x) ((elem_t) { .s = (x) })
 #define ptr_elem(x) ((elem_t) { .p = (x) })
+#define st_elem(x) ((elem_t) { .st = (x)})
 
 typedef struct entry entry_t;
 typedef struct hash_table ioopm_hash_table_t;
 typedef union element elem_t;
 typedef struct merchandise merch_t;
 typedef struct S s_t;
+typedef struct list ioopm_list_t;
+typedef struct list_node ioopm_list_node_t;
+
 typedef bool ioopm_eq_function(elem_t a, elem_t b);
 typedef size_t ioopm_hash_function(elem_t key);
 
@@ -23,6 +27,7 @@ union element {
   int i;
   bool b;
   void *p;
+  s_t *st;
 };
 
 struct entry
@@ -42,6 +47,19 @@ struct hash_table
   ioopm_eq_function *is_equal;  // Function to check if the desired kind of key is equal to another
 };
 
+struct list
+{
+    ioopm_list_node_t *first;
+    ioopm_list_node_t *last;
+    size_t size;
+};
+
+struct list_node
+{
+    elem_t head;
+    ioopm_list_node_t *tail;
+};
+
 struct merchandise {
     int stock;
     int price;
@@ -50,7 +68,7 @@ struct merchandise {
 };
 
 struct S {
-    merch_t item;
+    merch_t *item;
     ioopm_list_t locations;
 };
 

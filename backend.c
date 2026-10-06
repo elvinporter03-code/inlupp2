@@ -8,21 +8,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct merchandise merch_t;
-typedef struct S s_t;
-
-struct merchandise {
-    int stock;
-    int price;
-    char *desc;
-    char *name;
-};
-
-struct S {
-    merch_t item;
-    ioopm_list_t locations;
-};
-
 
 static size_t string_knr_hash(elem_t key)
 {
@@ -71,9 +56,12 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     s_t *item = S_create(name, desc, price);
 
     // lägg in den i ht_n med name som nyckel ger felmeddelande om den redan finns
-    bool new = ioopm_hash_table_insert(ht_n, name, item); // måste lägga in s_t i elem_t
-    if (!new) {
-        printf("%s already exists \n", name);
+    bool exists = ioopm_hash_table_has_key(ht_n, string_elem(name));
+    if (exists) {
+        printf("%s already exists\n", name);
+    }
+    else {
+        ioopm_hash_table_insert(ht_n, string_elem(name), st_elem(item));
     }
 
 }
@@ -96,6 +84,15 @@ void list_merchandise(ioopm_hash_table_t *ht_n){
         }
         print
     }
+}
+
+
+Loopar igenom alla locations med itemet och removear det, och sedan från htn också
+void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name) {
+    // hämta item
+    // gå igenom locations och plocka bort dem ur ht_sl
+    // ta bort item från ht_n
+    // frigör item mha free_S
 }
 
 

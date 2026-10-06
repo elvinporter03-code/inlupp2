@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 
+/*
 typedef struct list      ioopm_list_t;
 typedef struct list_node ioopm_list_node_t;
 
@@ -14,6 +15,7 @@ struct list_node {
     elem_t head;
     ioopm_list_node_t *tail;
 };
+*/
 
 /// @brief Creates a new empty list
 /// @return an empty linked list
