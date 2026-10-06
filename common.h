@@ -8,7 +8,8 @@
 #define bool_elem(x)  ((elem_t) { .b = (x) })
 #define string_elem(x) ((elem_t) { .s = (x) })
 #define ptr_elem(x) ((elem_t) { .p = (x) })
-#define st_elem(x) ((elem_t) { .st = (x)})
+#define st_elem(x) ((elem_t) { .st = (x) })
+#define crt_elem(x) ((elem_t) { .crt = (x) })
 
 typedef struct entry entry_t;
 typedef struct hash_table ioopm_hash_table_t;
