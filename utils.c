@@ -139,22 +139,7 @@ char *ask_question_shelf(char *question)
 {
     return ask_question(question, is_shelf, (convert_func *) convert_str).string_value;
 }
-/* Utkommenterad för att kompilatorn klagar på den
-// hjälpfunktion till ask_question_char 
-bool is_char(char *str)
-{
-    if (strlen(str) != 1) return false;
-    if (!isalpha(str[0])) return false;
 
-    return true;
-}
-
-// skickar ut en fråga i terminalen och returnerar en char.
-char ask_question_char(char *question)
-{
-    return ask_question(question, is_char, (convert_func *) strdup).character;
-}
-*/
 // check-funktion till ask_question_menu som kollar att inputsträngen innehåller:
 // ett tecken som ingår i "LlTtRrGgHhAa".
 bool is_menu_letter(char *str)

@@ -8,6 +8,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+static void destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name){
+    elem_t result;
+    ioopm_hash_table_lookup(ht_n, string_elem(name), &result);
+    s_t *to_free = result.p;
+    free(to_free->item);
+    ioopm_list_destroy(to_free->locations);
+
+}
+
 static size_t string_knr_hash(elem_t key)
 {
   const char *str = key.s;
@@ -31,15 +40,16 @@ static bool string_compare(elem_t str1, elem_t str2)
 
 void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(htn);
-    while(!ioopm_list_iterator_at_end(it)){
+    while(!ioopm_hash_table_iterator_at_end(it)){
         elem_t current = ioopm_hash_table_iterator_current_value(it);
         s_t *name = current.p;
         char* key = name->item->name;
         destroy_entry_htn(htn, key);
-        ioopm_list_iterator_advance(it);
+        ioopm_hash_table_iterator_advance(it);
     }
     ioopm_hash_table_destroy(htn);
     ioopm_hash_table_destroy(htsl);
+    ioopm_hash_table_iterator_destroy(it);
 }
 
 ioopm_list_t *sort(ioopm_list_t *list){
@@ -92,11 +102,13 @@ void list_merchandise(ioopm_hash_table_t *ht_n){
     while(!ioopm_hash_table_iterator_at_end(it)){
         result[i] = it->current_entry->key.s;
         i++;
+        ioopm_hash_table_iterator_advance(it);
     }
-    while(i >= 0){
-        printf("%s \n", result[i]);
-        i--;
-        if(i % 20 == 0){
+    int n = 0;
+    while(n < i){
+        printf("%s \n", result[n]);
+        n++;
+        if(n % 20 == 0){
             char *ans = ask_question_string("Vill du fortsätta? (Y/N)\n");
             to_upper_case(ans);
             if(ans[0] != 'Y'){
@@ -104,6 +116,7 @@ void list_merchandise(ioopm_hash_table_t *ht_n){
             }
         }
     }
+    ioopm_hash_table_iterator_destroy(it);
 }
 
 static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name){
@@ -118,13 +131,6 @@ static loc_pair_t *list_fetch(ioopm_list_iterator_t *it){
     return tmp;
 }
 
-static void *destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name){
-    elem_t result;
-    ioopm_hash_table_lookup(ht_n, string_elem(name), &result);
-    s_t *to_free = result.p;
-    free(to_free->item);
-    ioopm_list_destroy(to_free->locations);
-}
 
 
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name){
@@ -138,7 +144,7 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
     }
     destroy_entry_htn(ht_n, name);
     ioopm_hash_table_remove(ht_n, string_elem(name), &tmp);
-    
+    ioopm_list_iterator_destroy(it);
 }
 
 
@@ -171,6 +177,7 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
             ioopm_hash_table_insert(ht_sl, ioopm_list_iterator_current(it), string_elem(name_new));
             ioopm_list_iterator_advance(it);
         }
+        ioopm_list_iterator_destroy(it);
     }
     // Uppdaterar eller sätter in nya beroende på om namnet ändrats
     ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert)); 
@@ -186,6 +193,7 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name){
         printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
         ioopm_list_iterator_advance(it);
     }
+    ioopm_list_iterator_destroy(it);
 }
 
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf);
@@ -197,7 +205,9 @@ size_t calc_costs(ioopm_hash_table_t *cart);
 
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
     char *name;
-    while(true){
+    char *desc;
+    bool running = true;
+    while(running){
         char *ans = ask_question_string("Välj ett menyalternativ \n");
         printf("%s \n", ans);
             to_upper_case(ans);
@@ -205,7 +215,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
                 case 'A': 
                     puts("Du tryckte a");
                     char *name = ask_question_string("Vilket item vill du lägga till? \n");
-                    char *desc = ask_question_string("Description? \n");
+                    desc = ask_question_string("Description? \n");
                     size_t price = ask_question_int("Hur mycket kostar itemet? \n");
                     add_merchandise(ht_n, name, desc, price);
                     break;
@@ -222,7 +232,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
                 case 'E':
                     char *name_old = ask_question_string("Vilket item vill du ta ändra? \n");
                     char *name_new = ask_question_string("Nytt namn? \n");
-                    char *desc = ask_question_string("Ny description? \n");
+                    desc = ask_question_string("Ny description? \n");
                     size_t prize = ask_question_int("Hur mycket kostar itemet? \n");
                     if(confirmation()) edit_merchandise(ht_n, ht_sl, name_old, name_new, desc, prize);
                 break;
@@ -252,19 +262,24 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
 
                 case 'O':
                 break;
+                
+                case 'Q':
+                    running = false;
+                break;
 
                 default:
-                return;
+                    running = false;
                 break;
             }
     }
+    (void)name;
 }
 
 int main(){
     ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
     ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
 
-    main_loop(ht_n, ht_sl); //MÅNGA MINNESLÄCKOR, INGET ÄR FRIAT PROPERLY
+    main_loop(ht_n, ht_sl); 
 
     destructor(ht_n, ht_sl); //shoppingcarts
     return 0;

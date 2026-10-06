@@ -32,7 +32,6 @@ union element {
   s_t *st;
 };
 
-
 struct entry
 {
   elem_t key;     // holds the key
