@@ -32,19 +32,6 @@ union element {
   s_t *st;
 };
 
-struct list
-{
-    ioopm_list_node_t *first;
-    ioopm_list_node_t *last;
-    size_t size;
-};
-
-struct list_node
-{
-    elem_t head;
-    ioopm_list_node_t *tail;
-};
-
 
 struct entry
 {
