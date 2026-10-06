@@ -212,10 +212,33 @@ void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, 
 }
 
 ioopm_hash_table_t *create_cart();
+void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf){
+
+}
+
+// CART:
+
+static cart_t cart_create() {
+    cart_t *cart = calloc()
+}
+
+ioopm_hash_table_t *create_cart(ioopm_list_t *cart_list){
+    ioopm_hash_table_t *cart = ioopm_hash_table_create();
+    elem_t prev_key = int_elem(ioopm_list_last(cart_list));
+    elem_t key = prev_key++;
+
+    ioopm_list_append(cart_list, cart);
+}
+
+
 void remove_cart(ioopm_hash_table_t *cart);
 void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 size_t calc_costs(ioopm_hash_table_t *cart);
+
+
+// MAIN
+
 
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
     char *name;
