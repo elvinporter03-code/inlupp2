@@ -67,6 +67,7 @@ struct list_node
 
 struct merchandise {
     int stock;
+    int available_stock;
     int price;
     char *desc;
     char *name;
