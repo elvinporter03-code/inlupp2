@@ -17,11 +17,12 @@ typedef struct merchandise merch_t;
 typedef struct S s_t;
 typedef struct list ioopm_list_t;
 typedef struct list_node ioopm_list_node_t;
+typedef struct cart cart_t;
+typedef struct cart_list cart_list_t;
+
 
 typedef bool ioopm_eq_function(elem_t a, elem_t b);
 typedef size_t ioopm_hash_function(elem_t key);
-typedef struct list ioopm_list_t;
-typedef struct list_node ioopm_list_node_t;
 typedef struct list_pair loc_pair_t;
 
 union element {
@@ -30,6 +31,7 @@ union element {
   bool b;
   void *p;
   s_t *st;
+  cart_t *crt;
 };
 
 struct entry
@@ -72,6 +74,16 @@ struct merchandise {
 struct S {
     merch_t *item;
     ioopm_list_t *locations;
+};
+
+struct cart{
+    size_t id;
+    ioopm_hash_table_t *merchandise;
+};
+
+struct cart_list{
+    ioopm_list_t *carts;
+    size_t id_counter;
 };
 
 struct list_pair {

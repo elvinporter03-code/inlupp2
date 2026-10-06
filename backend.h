@@ -31,8 +31,8 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
 
 /// @brief Shows contents of locationlist
 // iterera över hela listan och printa plats och antal.
-/// @param ht_n 
-/// @param name 
+/// @param ht_n the db operated upon
+/// @param name the merchandise operated upon
 void show_stock(ioopm_hash_table_t *ht_n, char *name);
 
 /// @brief 
