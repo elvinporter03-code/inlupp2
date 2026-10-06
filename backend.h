@@ -27,7 +27,7 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
 /// @param name 
 /// @param desc 
 /// @param prize 
-void edit_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize);
+void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name, char *desc, size_t prize);
 
 /// @brief Shows contents of locationlist
 // iterera över hela listan och printa plats och antal.

@@ -20,7 +20,9 @@ typedef struct list_node ioopm_list_node_t;
 
 typedef bool ioopm_eq_function(elem_t a, elem_t b);
 typedef size_t ioopm_hash_function(elem_t key);
-
+typedef struct list ioopm_list_t;
+typedef struct list_node ioopm_list_node_t;
+typedef struct list_pair loc_pair_t;
 
 union element {
   char *s;
@@ -29,6 +31,20 @@ union element {
   void *p;
   s_t *st;
 };
+
+struct list
+{
+    ioopm_list_node_t *first;
+    ioopm_list_node_t *last;
+    size_t size;
+};
+
+struct list_node
+{
+    elem_t head;
+    ioopm_list_node_t *tail;
+};
+
 
 struct entry
 {
@@ -69,7 +85,12 @@ struct merchandise {
 
 struct S {
     merch_t *item;
-    ioopm_list_t locations;
+    ioopm_list_t *locations;
+};
+
+struct list_pair {
+  char *shelf;
+  size_t stock;
 };
 
 #endif
