@@ -57,7 +57,7 @@ bool confirmation(){
 }
 
 // skapar en S:
-s_t *S_create(char *name, char *desc, size_t price) {
+static s_t *S_create(char *name, char *desc, size_t price) {
     // skapar merch 
     merch_t *merch = calloc(1, sizeof(merch_t));
     merch->name = name;
@@ -71,7 +71,6 @@ s_t *S_create(char *name, char *desc, size_t price) {
     return S;
 }
 
-// Skapar merch_t med stock = 0 och stoppar in det i htn
 void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price) {
     // skapa en S
     s_t *item = S_create(name, desc, price);
@@ -84,7 +83,6 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     else {
         ioopm_hash_table_insert(ht_n, string_elem(name), st_elem(item));
     }
-
 }
 
 void list_merchandise(ioopm_hash_table_t *ht_n){
@@ -207,6 +205,10 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
             switch(ans[0]){
                 case 'A': 
                     puts("Du tryckte a");
+                    char *name = ask_question_string("Vilket item vill du lägga till? \n");
+                    char *desc = ask_question_string("Description? \n");
+                    size_t price = ask_question_int("Hur mycket kostar itemet? \n");
+                    add_merchandise(ht_n, name, desc, price);
                     break;
 
                 case 'L':
