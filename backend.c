@@ -200,11 +200,15 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name){
     ioopm_list_iterator_destroy(it);
 }
 
-void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf){
+void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount){
     ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
     s_t *item = lookup_htn(ht_n, name);
-    item->locations->size
-    ioopm_list_insert(item->locations);
+    item->locations->size;
+    loc_pair_t *tmp;
+    tmp->shelf = shelf;
+    item->item->stock += amount;
+    tmp->stock = amount;
+    ioopm_list_insert(item->locations, item->locations->size, ptr_elem(tmp));
 }
 
 ioopm_hash_table_t *create_cart();
