@@ -70,7 +70,7 @@ s_t *S_create(char *name, char *desc, size_t price) {
 
     return S;
 }
-/*
+
 // Skapar merch_t med stock = 0 och stoppar in det i htn
 void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price) {
     // skapa en S
@@ -85,7 +85,7 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
         ioopm_hash_table_insert(ht_n, string_elem(name), st_elem(item));
     }
 
-}*/
+}
 
 void list_merchandise(ioopm_hash_table_t *ht_n){
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
@@ -126,15 +126,6 @@ static void *destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name){
     s_t *to_free = result.p;
     free(to_free->item);
     ioopm_list_destroy(to_free->locations);
-}
-
-
-Loopar igenom alla locations med itemet och removear det, och sedan från htn också
-void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name) {
-    // hämta item
-    // gå igenom locations och plocka bort dem ur ht_sl
-    // ta bort item från ht_n
-    // frigör item mha free_S
 }
 
 
