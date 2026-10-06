@@ -200,7 +200,13 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name){
     ioopm_list_iterator_destroy(it);
 }
 
-void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf);
+void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf){
+    ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
+    s_t *item = lookup_htn(ht_n, name);
+    item->locations->size
+    ioopm_list_insert(item->locations);
+}
+
 ioopm_hash_table_t *create_cart();
 void remove_cart(ioopm_hash_table_t *cart);
 void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
@@ -210,6 +216,7 @@ size_t calc_costs(ioopm_hash_table_t *cart);
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
     char *name;
     char *desc;
+    char *shelf;
     bool running = true;
     while(running){
         char *ans = ask_question_string("Välj ett menyalternativ \n");
@@ -242,11 +249,14 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
                 break;
 
                 case 'S':
-                    name = ask_question_string("Vilket item vill du ta bort? \n");
+                    name = ask_question_string("Vilket item vill du visa stock för? \n");
                     show_stock(ht_n, name);
                 break;
 
                 case 'P':
+                    shelf = ask_question_shelf("Vilken hylla vill du lägga till på \n");
+                    name = ask_question_string("Vilket item vill du lägga till fler av? \n");
+                    replenish(ht_sl, ht_n, name, shelf);
                 break;
 
                 case 'C':
