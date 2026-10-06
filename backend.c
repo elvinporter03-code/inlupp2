@@ -190,34 +190,31 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
 
 void show_stock(ioopm_hash_table_t *ht_n, char *name){
     s_t *item_s = lookup_htn(ht_n, name);
-
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(sort(item_s->locations));
-    while(!ioopm_list_iterator_at_end(it)){
-        loc_pair_t *current = list_fetch(it);
-        printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
-        ioopm_list_iterator_advance(it);
+    if(item_s->item->stock != 0){
+        ioopm_list_iterator_t *it = ioopm_list_iterator_create(sort(item_s->locations));
+        while(!ioopm_list_iterator_at_end(it)){
+            loc_pair_t *current = list_fetch(it);
+            printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
+            ioopm_list_iterator_advance(it);
+        }
+        ioopm_list_iterator_destroy(it);
     }
-    ioopm_list_iterator_destroy(it);
 }
 
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount){
     ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
     s_t *item = lookup_htn(ht_n, name);
-    item->locations->size;
-    loc_pair_t *tmp;
-    tmp->shelf = shelf;
+    loc_pair_t tmp;
+    tmp.shelf = shelf;
     item->item->stock += amount;
-    tmp->stock = amount;
-    ioopm_list_insert(item->locations, item->locations->size, ptr_elem(tmp));
+    tmp.stock = amount;
+    item->item->available_stock += amount;
+    ioopm_list_insert(item->locations, item->locations->size, ptr_elem(&tmp));
 }
 
 ioopm_hash_table_t *create_cart();
-void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf){
-
-}
-
 // CART:
-
+/*
 static cart_t cart_create() {
     cart_t *cart = calloc()
 }
@@ -229,7 +226,7 @@ ioopm_hash_table_t *create_cart(ioopm_list_t *cart_list){
 
     ioopm_list_append(cart_list, cart);
 }
-
+*/
 
 void remove_cart(ioopm_hash_table_t *cart);
 void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
@@ -283,7 +280,8 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
                 case 'P':
                     shelf = ask_question_shelf("Vilken hylla vill du lägga till på \n");
                     name = ask_question_string("Vilket item vill du lägga till fler av? \n");
-                    replenish(ht_sl, ht_n, name, shelf);
+                    size_t amount = ask_question_int("Hur många vill du fylla på med? \n");
+                    replenish(ht_sl, ht_n, name, shelf, amount);
                 break;
 
                 case 'C':
