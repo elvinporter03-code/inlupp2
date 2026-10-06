@@ -34,8 +34,8 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl){
     while(!ioopm_list_iterator_at_end(it)){
         elem_t current = ioopm_hash_table_iterator_current_value(it);
         s_t *name = current.p;
-        name->item
-        destroy_entry_htn(htn, );
+        char* key = name->item->name;
+        destroy_entry_htn(htn, key);
         ioopm_list_iterator_advance(it);
     }
     ioopm_hash_table_destroy(htn);
