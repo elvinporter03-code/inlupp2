@@ -8,13 +8,28 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+static void destroy_loc_pairs(ioopm_list_t *list){
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+    while(!ioopm_list_iterator_at_end(it)){
+        elem_t tmp = ioopm_list_iterator_current(it);
+        loc_pair_t *tmp_l = tmp.p; 
+        free(tmp_l)
+        ioopm_list_iterator_advance(it);
+    }
+    ioopm_list_iterator_destroy(it);
+}
+
 static void destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name){
     elem_t result;
-    ioopm_hash_table_lookup(ht_n, string_elem(name), &result);
-    s_t *to_free = result.p;
-    free(to_free->item);
-    ioopm_list_destroy(to_free->locations);
-
+    if(ioopm_hash_table_lookup(ht_n, string_elem(name), &result)){
+        s_t *to_free = result.p;
+        free(to_free->item->desc);
+        free(to_free->item->name);
+        free(to_free->item);
+        destroy_loc_pairs(to_free->locations);
+        ioopm_list_destroy(to_free->locations);
+        free(to_free);
+    }
 }
 
 static size_t string_knr_hash(elem_t key)
@@ -190,32 +205,29 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
 
 void show_stock(ioopm_hash_table_t *ht_n, char *name){
     s_t *item_s = lookup_htn(ht_n, name);
-
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(sort(item_s->locations));
-    while(!ioopm_list_iterator_at_end(it)){
-        loc_pair_t *current = list_fetch(it);
-        printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
-        ioopm_list_iterator_advance(it);
+    if(item_s->item->stock != 0){
+        ioopm_list_iterator_t *it = ioopm_list_iterator_create(sort(item_s->locations));
+        while(!ioopm_list_iterator_at_end(it)){
+            loc_pair_t *current = list_fetch(it);
+            printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
+            ioopm_list_iterator_advance(it);
+        }
+        ioopm_list_iterator_destroy(it);
     }
-    ioopm_list_iterator_destroy(it);
 }
 
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount){
     ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
     s_t *item = lookup_htn(ht_n, name);
-    item->locations->size;
-    loc_pair_t *tmp;
+    loc_pair_t *tmp = calloc(1, sizeof(loc_pair_t));
     tmp->shelf = shelf;
     item->item->stock += amount;
     tmp->stock = amount;
+    item->item->available_stock += amount;
     ioopm_list_insert(item->locations, item->locations->size, ptr_elem(tmp));
 }
 
 ioopm_hash_table_t *create_cart();
-void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf){
-
-}
-
 // CART:
 
 static cart_t *cart_create() {
@@ -307,7 +319,8 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n){
                 case 'P':
                     shelf = ask_question_shelf("Vilken hylla vill du lägga till på \n");
                     name = ask_question_string("Vilket item vill du lägga till fler av? \n");
-                    replenish(ht_sl, ht_n, name, shelf);
+                    size_t amount = ask_question_int("Hur många vill du fylla på med? \n");
+                    replenish(ht_sl, ht_n, name, shelf, amount);
                 break;
 
                 case 'C':
