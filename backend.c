@@ -158,9 +158,8 @@ void list_merchandise(ioopm_hash_table_t *ht_n)
     ioopm_hash_table_iterator_destroy(it);
 }
 
-static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name_in)
+static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
 {
-    char *name = name_in;
     elem_t item;
     if(ioopm_hash_table_lookup(ht_n, string_elem(name), &item)){
         return item.p;
