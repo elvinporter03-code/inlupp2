@@ -116,7 +116,7 @@ void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash
 
         ioopm_hash_table_iterator_advance(it);
     }
-
+    
     free_cart(cart);
 }
 
