@@ -226,7 +226,7 @@ void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, 
     ioopm_list_insert(item->locations, item->locations->size, ptr_elem(tmp));
 }
 
-ioopm_hash_table_t *create_cart();
+
 // CART:
 
 static cart_t *cart_create() {
@@ -283,7 +283,18 @@ void ioopm_create_cart(cart_list_t *cart_list) {
 }
 
 void remove_cart(ioopm_hash_table_t *cart) {
-    // plocka ut och lämna tillbaka items för alla items
+
+    // i whileloop gör
+    // plocka ut cinfo
+
+    // använd shelf som key och amount som value
+    // inserta i shelf
+
+    // plocka ut S 
+    // kör insert på S->locations
+    // kör add på S->merch->av_stock
+
+    // ta namnet och 
     // freea cart mha free_cart_list
     
 }
