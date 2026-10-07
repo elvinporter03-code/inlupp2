@@ -14,8 +14,10 @@ bool confirmation()
     to_upper_case(ans);
     if (ans[0] == 'Y')
     {
+        free(ans);
         return true;
     }
+    free(ans);
     return false;
 }
 
@@ -41,6 +43,9 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             desc = ask_question_string("Description? \n");
             price = ask_question_int("Hur mycket kostar itemet? \n");
             add_merchandise(ht_n, name, desc, price);
+            free(desc);
+            free(name);
+
             break;
 
         case 'L':
@@ -49,8 +54,9 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
 
         case 'D':
             name = ask_question_string("Vilket item vill du ta bort? \n");
-            if (confirmation())
-                remove_merchandise(ht_n, ht_sl, name);
+            if (confirmation())remove_merchandise(ht_n, ht_sl, name);
+            free(name);
+
             break;
 
         case 'E':
@@ -58,13 +64,17 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             name_new = ask_question_string("Nytt namn? \n");
             desc = ask_question_string("Ny description? \n");
             price = ask_question_int("Hur mycket kostar itemet? \n");
-            if (confirmation())
-                edit_merchandise(ht_n, ht_sl, name_old, name_new, desc, price);
+            if (confirmation()) edit_merchandise(ht_n, ht_sl, name_old, name_new, desc, price);
+            free(desc);
+            free(name_old);
+            free(name_new);
+
             break;
 
         case 'S':
             name = ask_question_string("Vilket item vill du visa stock för? \n");
             show_stock(ht_n, name);
+            free(name);
             break;
 
         case 'P':
@@ -72,6 +82,9 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             name = ask_question_string("Vilket item vill du lägga till fler av? \n");
             size_t amount = ask_question_int("Hur många vill du fylla på med? \n");
             replenish(ht_sl, ht_n, name, shelf, amount);
+            free(name);
+            free(shelf);
+
             break;
 
         case 'C':
@@ -102,11 +115,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
         }
         free(ans);
     }
-    free(shelf);
-    free(desc);
-    free(name);
-    free(name_old);
-    free(name_new);
+
 }
 
 int main()
