@@ -27,7 +27,7 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
 /// @param name 
 /// @param desc 
 /// @param prize 
-void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name, char *desc, size_t prize);
+void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name_old, char *name_new, char *desc, size_t price);
 
 /// @brief Shows contents of locationlist
 // iterera över hela listan och printa plats och antal.
@@ -43,7 +43,7 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name);
 /// @param ht_n 
 /// @param shelf
 /// @param name 
-void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf);
+void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount);
 
 /// @brief Creates an empty shopping cart
 /// @return pointer to the cart
@@ -75,3 +75,4 @@ void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 /// @return total price
 size_t calc_costs(ioopm_hash_table_t *cart);
 
+void destructor(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl);

@@ -13,6 +13,37 @@ int clean_suite(void) {
   return 0;
 }
 
+static size_t string_knr_hash(elem_t key)
+{
+    const char *str = key.s;
+    size_t result = 0;
+    while (*str != '\0')
+    {
+        result = result * 31 + ((unsigned char)*str);
+        str++;
+    }
+    return result;
+}
+
+static bool string_compare(elem_t str1, elem_t str2)
+{
+    const char *string1 = str1.s;
+    const char *string2 = str2.s;
+
+    return strcmp(string1, string2) == 0;
+}
+
+void add_remove(void){
+  ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
+  ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
+  char *name = "Bok";
+  char *desc = "En intressant bok";
+  size_t price = 67;
+  add_merchandise(ht_n, name, desc, price);
+  remove_merchandise(ht_n, ht_sl, name);
+  
+  destructor(ht_n, ht_sl);
+}
 
 int main() {
   // First we try to set up CUnit, and exit if we fail
@@ -33,7 +64,7 @@ int main() {
   // name or description of the test, and the function that runs
   // the test in question. If you want to add another test, just
   // copy a line below and change the information'
-  if (CU_add_test(my_test_suite, "iterating over ht with several entries in same bucket and checking if theyre unique", test_iterator_several_unique_same_bucket) == NULL)
+  if (CU_add_test(my_test_suite, "Lägger till ett item och tar bort det", add_remove) == NULL)
     {
       // If adding any of the tests fails, we tear down CUnit and exit
       CU_cleanup_registry();
