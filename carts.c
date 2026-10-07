@@ -21,6 +21,11 @@ static cart_list_t *cart_list_create()
     return cart_list;
 }
 
+static loc_pair_t *list_pair_create() {
+    loc_pair_t *list_pair = calloc(1, sizeof(loc_pair_t));
+    return list_pair;
+}
+
 static void free_cart_info(cart_t *cart) {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandise);
     elem_t c_value;
@@ -64,8 +69,6 @@ void ioopm_create_cart(cart_list_t *cart_list)
 
 void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n) {
 
-    // i whileloop gör
-    // plocka ut cinfo
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandise);
     elem_t current_info;
     elem_t current_name;
@@ -73,50 +76,48 @@ void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash
     elem_t result;
 
     while(!ioopm_hash_table_iterator_at_end(it)) {
+
         current_info = ioopm_hash_table_iterator_current_value(it);
         current_name = ioopm_hash_table_iterator_current_key(it);
-        current_amount = current_merch.cinfo->amount;
+        size_t current_amount = current_info.cinfo->amount;
+
         if (!ioopm_hash_table_lookup(ht_sl, current_info.cinfo->shelf, &result)) {
              ioopm_hash_table_insert(ht_sl, current_info.cinfo->shelf, current_name.s);
         }
 
-        // hantera ht_n
+        // ht_n available_stock:
+        ioopm_hash_table_lookup(ht_n, current_name.s, &current_S);
+        current_S->item->available_stock += current_amount;
 
-        // hämta current_s från htn mha current_name
-        current_S = ioopm_hash_table_lookup(ht_n, current_name.s, &current_S);
 
-        // sätt current_s.st->merchandise->available_stock += current_amount;
-        current_S->merchandise->available_stock += current_amount;
-
-        // skapa iterator för current_s->locations 
-
+        // ht_n locations:
         ioopm_list_iterator_t *list_it = ioopm_list_iterator_create(current_S->locations);
-        // gå igenom listan tills vi hittar rätt shelf
         elem_t tmp = ioopm_list_iterator_current(list_it);
         loc_pair_t *current_link = tmp.p;
 
-        while(strcmp(current_link>shel-f, current_info->shelf) != 0)
-        // sätt dess stock += current_amount.
+        while (!ioopm_list_iterator_at_end(list_it)) {
 
-        // kör iterator advance
+            if (strcmp(current_link->shelf, current_info.cinfo->shelf) == 0) {
+                current_link->stock += current_amount;
+                break;
+            }
 
-        
+            ioopm_list_iterator_advance(list_it);
+            tmp = ioopm_list_iterator_current(list_it);
+            current_link = tmp.p;
+        }
 
-        //ioopm_hash_table_insert(ht_sl, current_merch.cinfo->shelf, current_amount);
+        if (ioopm_list_iterator_at_end(list_it)) {
+            loc_pair_t *link = list_pair_create();
+            link->shelf = current_info->shelf;
+            link->stock = current_amount;
+            ioopm_list_append(current_S->locations, link);
+        }
 
-        // hantera ht_sl:
-
+        ioopm_hash_table_iterator_advance(it);
     }
 
-    // använd shelf som key och amount som value
-    // inserta i shelf
-
-    // plocka ut S 
-    // kör insert på S->locations
-    // kör add på S->merch->av_stock
-
-    // ta namnet och 
-    // freea cart mha free_cart_list
+    free_cart(cart);
 }
 
 void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
