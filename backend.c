@@ -8,13 +8,28 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+static void destroy_loc_pairs(ioopm_list_t *list){
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+    while(!ioopm_list_iterator_at_end(it)){
+        elem_t tmp = ioopm_list_iterator_current(it);
+        loc_pair_t *tmp_l = tmp.p; 
+        free(tmp_l)
+        ioopm_list_iterator_advance(it);
+    }
+    ioopm_list_iterator_destroy(it);
+}
+
 static void destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name){
     elem_t result;
-    ioopm_hash_table_lookup(ht_n, string_elem(name), &result);
-    s_t *to_free = result.p;
-    free(to_free->item);
-    ioopm_list_destroy(to_free->locations);
-
+    if(ioopm_hash_table_lookup(ht_n, string_elem(name), &result)){
+        s_t *to_free = result.p;
+        free(to_free->item->desc);
+        free(to_free->item->name);
+        free(to_free->item);
+        destroy_loc_pairs(to_free->locations);
+        ioopm_list_destroy(to_free->locations);
+        free(to_free);
+    }
 }
 
 static size_t string_knr_hash(elem_t key)
@@ -204,12 +219,12 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name){
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount){
     ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
     s_t *item = lookup_htn(ht_n, name);
-    loc_pair_t tmp;
-    tmp.shelf = shelf;
+    loc_pair_t *tmp = calloc(1, sizeof(loc_pair_t));
+    tmp->shelf = shelf;
     item->item->stock += amount;
-    tmp.stock = amount;
+    tmp->stock = amount;
     item->item->available_stock += amount;
-    ioopm_list_insert(item->locations, item->locations->size, ptr_elem(&tmp));
+    ioopm_list_insert(item->locations, item->locations->size, ptr_elem(tmp));
 }
 
 ioopm_hash_table_t *create_cart();
@@ -234,7 +249,6 @@ void ioopm_create_cart(cart_list_t *cart_list){
 
     ioopm_list_append(cart_list->carts, crt_elem(cart));
 }
-*/
 
 void remove_cart(ioopm_hash_table_t *cart);
 void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
