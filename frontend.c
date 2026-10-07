@@ -1,4 +1,7 @@
 #include "backend.h"
+#include "common.h"
+#include "hash_table_iterator.h"
+#include "list_iterator.h"
 #include "utils.h"
 #include <stdio.h>
 #include <string.h>
@@ -16,31 +19,13 @@ bool confirmation()
     return false;
 }
 
-static size_t string_knr_hash(elem_t key)
-{
-    const char *str = key.s;
-    size_t result = 0;
-    while (*str != '\0')
-    {
-        result = result * 31 + ((unsigned char)*str);
-        str++;
-    }
-    return result;
-}
-
-static bool string_compare(elem_t str1, elem_t str2)
-{
-    const char *string1 = str1.s;
-    const char *string2 = str2.s;
-
-    return strcmp(string1, string2) == 0;
-}
-
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
 {
     char *name;
     char *desc;
     char *shelf;
+    char *name_old;
+    char *name_new;
     size_t price;
     bool running = true;
     while (running)
@@ -52,7 +37,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
         {
         case 'A':
             puts("Du tryckte a");
-            char *name = ask_question_string("Vilket item vill du lägga till? \n");
+            name = ask_question_string("Vilket item vill du lägga till? \n");
             desc = ask_question_string("Description? \n");
             price = ask_question_int("Hur mycket kostar itemet? \n");
             add_merchandise(ht_n, name, desc, price);
@@ -69,8 +54,8 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             break;
 
         case 'E':
-            char *name_old = ask_question_string("Vilket item vill du ta ändra? \n");
-            char *name_new = ask_question_string("Nytt namn? \n");
+            name_old = ask_question_string("Vilket item vill du ta ändra? \n");
+            name_new = ask_question_string("Nytt namn? \n");
             desc = ask_question_string("Ny description? \n");
             price = ask_question_int("Hur mycket kostar itemet? \n");
             if (confirmation())
@@ -115,8 +100,13 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             running = false;
             break;
         }
+        free(ans);
     }
-    (void)name;
+    free(shelf);
+    free(desc);
+    free(name);
+    free(name_old);
+    free(name_new);
 }
 
 int main()
@@ -124,7 +114,7 @@ int main()
     ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
     ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
 
-    main_loop(ht_n, ht_sl);
+    main_loop(ht_sl, ht_n);
 
     destructor(ht_n, ht_sl); // shoppingcarts
     return 0;

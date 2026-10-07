@@ -1,16 +1,20 @@
 CC     = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS =  -Wall -Wextra -g -fsanitize=address,undefined
 
-# Alla .c-filer utom backend.c (som har main)
-SHARED = linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c backend.c 
+# Alla .c-filer utom frontend.c och backend_tests.c (båda har main)
+SHARED = backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
 
-all: app tests
+# Alla .h-filer (för beroenden)
+HDRS = backend.h common.h linked_list.h list_iterator.h hash_table.h hash_table_iterator.h utils.h
 
-app: backend.c $(SHARED) backend.h common.h linked_list.h list_iterator.h hash_table.h hash_table_iterator.h utils.h
+# Programmet
+app: frontend.c $(SHARED) $(HDRS)
 	$(CC) $(CFLAGS) frontend.c $(SHARED) -o app
 
-tests: backend_tests.c backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
-	$(CC) $(CFLAGS) $^ -o tests -lcunit
+# Testerna (egen main i backend_tests.c)
+tests: backend_tests.c $(SHARED) $(HDRS)
+	$(CC) $(CFLAGS) backend_tests.c $(SHARED) -o tests -lcunit
+
 clean:
 	rm -f app tests
 
