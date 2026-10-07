@@ -76,3 +76,6 @@ void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 size_t calc_costs(ioopm_hash_table_t *cart);
 
 void destructor(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl);
+
+size_t string_knr_hash(elem_t key);
+bool string_compare(elem_t str1, elem_t str2);

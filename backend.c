@@ -9,6 +9,9 @@
 
 static void destroy_loc_pairs(ioopm_list_t *list)
 {
+    if(ioopm_list_is_empty(list)){
+        return;
+    }
     ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
     while (!ioopm_list_iterator_at_end(it))
     {
@@ -21,7 +24,12 @@ static void destroy_loc_pairs(ioopm_list_t *list)
     ioopm_list_iterator_destroy(it);
 }
 
-static void destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name)
+static void destroy_locations(ioopm_list_t *l){
+    destroy_loc_pairs(l);
+    ioopm_list_destroy(l);
+}   
+
+static void destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name, bool destroy_list)
 {
     elem_t result;
     if (ioopm_hash_table_lookup(ht_n, string_elem(name), &result))
@@ -31,16 +39,18 @@ static void destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name)
         {
             if (to_free->item->desc)
                 free(to_free->item->desc);
-            if (to_free->item->name)
-                free(to_free->item->name);
             free(to_free->item);
         }
-        destroy_loc_pairs(to_free->locations);
-        ioopm_list_destroy(to_free->locations);
+        if(destroy_list){
+            destroy_locations(to_free->locations);
+            free(to_free);
+        }
     }
 }
 
-static size_t string_knr_hash(elem_t key)
+
+
+size_t string_knr_hash(elem_t key)
 {
     const char *str = key.s;
     size_t result = 0;
@@ -51,8 +61,8 @@ static size_t string_knr_hash(elem_t key)
     }
     return result;
 }
-
-static bool string_compare(elem_t str1, elem_t str2)
+ 
+bool string_compare(elem_t str1, elem_t str2)
 {
     const char *string1 = str1.s;
     const char *string2 = str2.s;
@@ -68,7 +78,7 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl)
         elem_t tmp = ioopm_hash_table_iterator_current_value(it);
         s_t *current = tmp.p;
         char *key = current->item->name;
-        destroy_entry_htn(htn, key);
+        destroy_entry_htn(htn, key, true);
         ioopm_hash_table_iterator_advance(it);
     }
     ioopm_hash_table_iterator_destroy(it);
@@ -85,8 +95,10 @@ ioopm_list_t *sort(ioopm_list_t *list)
 
 
 // skapar en S:
-static s_t *S_create(char *name, char *desc, size_t price)
-{
+static s_t *S_create(char *name, char *desc_in, size_t price)
+{   
+    char *desc = strdup(desc_in);
+
     // skapar merch
     merch_t *merch = calloc(1, sizeof(merch_t));
     merch->name = strdup(name); // behöver strdupas för att destructorn ska funka som jag vill med nyckeln
@@ -113,7 +125,7 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     }
     else
     {
-        ioopm_hash_table_insert(ht_n, string_elem(name), st_elem(item));
+        ioopm_hash_table_insert(ht_n, string_elem(item->item->name), st_elem(item));
     }
 }
 
@@ -146,11 +158,14 @@ void list_merchandise(ioopm_hash_table_t *ht_n)
     ioopm_hash_table_iterator_destroy(it);
 }
 
-static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
+static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name_in)
 {
+    char *name = name_in;
     elem_t item;
-    ioopm_hash_table_lookup(ht_n, string_elem(name), &item);
-    return item.p;
+    if(ioopm_hash_table_lookup(ht_n, string_elem(name), &item)){
+        return item.p;
+    }
+    return NULL;
 }
 
 static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
@@ -163,33 +178,41 @@ static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name)
 {
     elem_t tmp;
-
     s_t *item_s = lookup_htn(ht_n, name);
+    if(item_s == NULL){
+        puts("Hittade inte itemet som söks!");
+        return;
+    }
     ioopm_list_t *l = item_s->locations;
     if (!ioopm_list_is_empty(l))
     {
         ioopm_list_iterator_t *it = ioopm_list_iterator_create(l);
         while (!ioopm_list_iterator_at_end(it))
         {
-            ioopm_hash_table_remove(ht_sl, ioopm_list_iterator_current(it), &tmp);
+            elem_t to_cast = ioopm_list_iterator_current(it);
+            loc_pair_t *casted = to_cast.p;
+            ioopm_hash_table_remove(ht_sl, string_elem(casted->shelf), &tmp);
             ioopm_list_iterator_advance(it);
         }
         ioopm_list_iterator_destroy(it);
     }
-    destroy_entry_htn(ht_n, name);
-    ioopm_hash_table_remove(ht_n, string_elem(name), &tmp);
+    char *name_copy = strdup(name);
+    destroy_entry_htn(ht_n, name, true);
+    ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
+    free(name_copy);
 }
 
-void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name_old, char *name_new, char *desc, size_t price)
+void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name_old, char *name_new_in, char *desc_in, size_t price)
 {
-
+    char *name_new = strdup(name_new_in);
+    char *desc = strdup(desc_in);
     // Hämta all tidigare info om itemet
     s_t *item_s = lookup_htn(ht_n, name_old);
 
     // skapar ny(?) info om  itemet
     merch_t *tmp = calloc(1, sizeof(merch_t));
     tmp->desc = desc;
-    tmp->name = strdup(name_new);
+    tmp->name = name_new;
     tmp->price = price;
     tmp->stock = item_s->item->stock;
 
@@ -203,7 +226,7 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     {
         // tar bort alla instanser av den gamla varan utifall namnet ändrats
         elem_t tmp;
-        destroy_entry_htn(ht_n, name_old);
+        destroy_entry_htn(ht_n, name_old, false);
         ioopm_hash_table_remove(ht_n, string_elem(name_old), &tmp);
         if (!ioopm_list_is_empty(locs))
         {
@@ -211,7 +234,9 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
             ioopm_list_iterator_t *it = ioopm_list_iterator_create(locs);
             while (!ioopm_list_iterator_at_end(it))
             {
-                ioopm_hash_table_insert(ht_sl, ioopm_list_iterator_current(it), string_elem(name_new));
+                elem_t to_cast = ioopm_list_iterator_current(it);
+                loc_pair_t *casted = to_cast.p;
+                ioopm_hash_table_insert(ht_sl, string_elem(casted->shelf), string_elem(name_new));
                 ioopm_list_iterator_advance(it);
             }
             ioopm_list_iterator_destroy(it);
