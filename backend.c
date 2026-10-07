@@ -192,10 +192,12 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
         }
         ioopm_list_iterator_destroy(it);
     }
+    char *to_free = item_s->item->name;
     char *name_copy = strdup(name);
     destroy_entry_htn(item_s, true);
     ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
     free(name_copy);
+    free(to_free);
 }
 
 void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name_old, char *name_new_in, char *desc_in, size_t price)
@@ -261,8 +263,9 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name)
     }
 }
 
-void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount)
+void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf_in, size_t amount)
 {
+    char *shelf = strdup(shelf_in);
     ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
     s_t *item = lookup_htn(ht_n, name);
     loc_pair_t *tmp = calloc(1, sizeof(loc_pair_t));
@@ -270,5 +273,5 @@ void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, 
     item->item->stock += amount;
     tmp->stock = amount;
     item->item->available_stock += amount;
-    ioopm_list_insert(item->locations, item->locations->size, ptr_elem(tmp));
+    ioopm_list_append(item->locations, ptr_elem(tmp));
 }
