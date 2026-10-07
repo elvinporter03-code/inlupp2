@@ -230,7 +230,18 @@ static cart_list_t *cart_list_create() {
     return cart_list;
 }
 
-void ioopm_create_cart(cart_list_t *cart_list){
+static void free_cart(cart_t *cart) {
+    // STUB:
+    (void) cart;
+}
+
+
+static void free_cart_list(cart_list_t *cart_list) {
+    // STUB:
+    (void) cart_list;
+}
+
+void ioopm_create_cart(cart_list_t *cart_list) {
     cart_t *cart = cart_create();
     cart_list->id_counter++;
     cart->id = cart_list->id_counter;
@@ -238,8 +249,13 @@ void ioopm_create_cart(cart_list_t *cart_list){
     ioopm_list_append(cart_list->carts, crt_elem(cart));
 }
 
+void remove_cart(ioopm_hash_table_t *cart) {
+    // plocka ut och lämna tillbaka items för alla items
+    // freea cart mha free_cart_list
+    
+}
 
-void remove_cart(ioopm_hash_table_t *cart);
+
 void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 size_t calc_costs(ioopm_hash_table_t *cart);
