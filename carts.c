@@ -113,7 +113,6 @@ void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash
             link->stock = current_amount;
             ioopm_list_append(current_S->locations, link);
         }
-
         ioopm_hash_table_iterator_advance(it);
     }
     
