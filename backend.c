@@ -242,15 +242,37 @@ static cart_list_t *cart_list_create() {
     return cart_list;
 }
 
+static void free_cart_info(cart_t *cart) {
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandise);
+    elem_t *c_value;
+    while (!ioopm_hash_table_iterator_at_end(it))
+    {
+        c_value = ioopm_hash_table_iterator_current_value(it);
+        free(c_value->cinfo->shelf);
+        free(c_value->cinfo);
+        ioopm_hash_table_iterator_advance(it);
+    }
+    ioopm_hash_table_iterator_destroy(it);
+}
+
 static void free_cart(cart_t *cart) {
-    // STUB:
-    (void) cart;
+    free_cart_info(cart);
+    ioopm_hash_table_destroy(cart->merchandise);
+    free(cart);
 }
 
 
 static void free_cart_list(cart_list_t *cart_list) {
-    // STUB:
-    (void) cart_list;
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(cart_list->carts);
+    elem_t *current;
+    while (!ioopm_list_iterator_at_end(it)) {
+        current = ioopm_list_iterator_current(it);
+        free_cart(current->crt);
+        ioopm_list_iterator_advance(it);
+    }
+    ioopm_list_iterator_destroy(it);
+    ioopm_list_destroy(cart_list->carts);
+    free(cart_list);
 }
 
 void ioopm_create_cart(cart_list_t *cart_list) {
