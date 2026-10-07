@@ -12,8 +12,7 @@ static void destroy_loc_pairs(ioopm_list_t *list){
     ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
     while(!ioopm_list_iterator_at_end(it)){
         elem_t tmp = ioopm_list_iterator_current(it);
-        loc_pair_t *tmp_l = tmp.p; 
-        free(tmp_l)
+        free(tmp.p);
         ioopm_list_iterator_advance(it);
     }
     ioopm_list_iterator_destroy(it);
