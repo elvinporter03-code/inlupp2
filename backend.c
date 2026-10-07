@@ -29,22 +29,17 @@ static void destroy_locations(ioopm_list_t *l){
     ioopm_list_destroy(l);
 }   
 
-static void destroy_entry_htn(ioopm_hash_table_t *ht_n, char *name, bool destroy_list)
+static void destroy_entry_htn(s_t *S, bool destroy_list)
 {
-    elem_t result;
-    if (ioopm_hash_table_lookup(ht_n, string_elem(name), &result))
+    if (S->item)
     {
-        s_t *to_free = result.p;
-        if (to_free->item)
-        {
-            if (to_free->item->desc)
-                free(to_free->item->desc);
-            free(to_free->item);
-        }
-        if(destroy_list){
-            destroy_locations(to_free->locations);
-            free(to_free);
-        }
+        if (S->item->desc)
+            free(S->item->desc);
+        free(S->item);
+    }
+    if(destroy_list){
+        destroy_locations(S->locations);
+        free(S);
     }
 }
 
@@ -77,8 +72,9 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl)
     {
         elem_t tmp = ioopm_hash_table_iterator_current_value(it);
         s_t *current = tmp.p;
-        char *key = current->item->name;
-        destroy_entry_htn(htn, key, true);
+        char *to_free = current->item->name;
+        destroy_entry_htn(current, true);
+        free(to_free);
         ioopm_hash_table_iterator_advance(it);
     }
     ioopm_hash_table_iterator_destroy(it);
@@ -151,6 +147,7 @@ void list_merchandise(ioopm_hash_table_t *ht_n)
             to_upper_case(ans);
             if (ans[0] != 'Y')
             {
+                free(ans);
                 return;
             }
         }
@@ -196,7 +193,7 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
         ioopm_list_iterator_destroy(it);
     }
     char *name_copy = strdup(name);
-    destroy_entry_htn(ht_n, name, true);
+    destroy_entry_htn(item_s, true);
     ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
     free(name_copy);
 }
@@ -207,6 +204,7 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     char *desc = strdup(desc_in);
     // Hämta all tidigare info om itemet
     s_t *item_s = lookup_htn(ht_n, name_old);
+    char *to_free = item_s->item->name; //namn för att fria separat på rätt plats
 
     // skapar ny(?) info om  itemet
     merch_t *tmp = calloc(1, sizeof(merch_t));
@@ -225,7 +223,8 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     {
         // tar bort alla instanser av den gamla varan utifall namnet ändrats
         elem_t tmp;
-        destroy_entry_htn(ht_n, name_old, false);
+        destroy_entry_htn(item_s, false);
+        free(item_s);
         ioopm_hash_table_remove(ht_n, string_elem(name_old), &tmp);
         if (!ioopm_list_is_empty(locs))
         {
@@ -240,6 +239,7 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
             }
             ioopm_list_iterator_destroy(it);
         }
+        free(to_free);
     }
     // Uppdaterar eller sätter in nya beroende på om namnet ändrats
     ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert));
