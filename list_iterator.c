@@ -30,7 +30,7 @@ void ioopm_list_iterator_destroy(ioopm_list_iterator_t *iter)
 
 bool ioopm_list_iterator_at_end(ioopm_list_iterator_t *iter)
 {
-    return iter->current_node->tail == NULL;
+    return iter->current_node == NULL;
 }
 
 void ioopm_list_iterator_advance(ioopm_list_iterator_t *iter)
