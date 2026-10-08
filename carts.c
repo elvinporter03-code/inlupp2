@@ -81,19 +81,26 @@ void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash
         current_name = ioopm_hash_table_iterator_current_key(it);
         size_t current_amount = current_info.cinfo->amount;
 
-        if (!ioopm_hash_table_lookup(ht_sl, current_info.cinfo->shelf, &result)) {
-             ioopm_hash_table_insert(ht_sl, current_info.cinfo->shelf, current_name.s);
-        }
+       // if (!ioopm_hash_table_lookup(ht_sl, current_info.cinfo->shelf, &result)) {
+       //      ioopm_hash_table_insert(ht_sl, current_info.cinfo->shelf, current_name.s);
+       // }
 
         // ht_n available_stock:
-        ioopm_hash_table_lookup(ht_n, current_name.s, &current_S);
+        ioopm_hash_table_lookup(ht_n, current_name, &current_S);
         current_S->item->available_stock += current_amount;
 
 
         // ht_n locations:
         ioopm_list_iterator_t *list_it = ioopm_list_iterator_create(current_S->locations);
+        if (ioopm_list_iterator_at_end(list_it)) {
+            //felmeddelande
+        }
+
         elem_t tmp = ioopm_list_iterator_current(list_it);
         loc_pair_t *current_link = tmp.p;
+
+        current_link->stock += current_amount;
+        /*
 
         while (!ioopm_list_iterator_at_end(list_it)) {
 
@@ -113,13 +120,20 @@ void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash
             link->stock = current_amount;
             ioopm_list_append(current_S->locations, link);
         }
+        */
+        ioopm_list_iterator_destroy(list_it);
         ioopm_hash_table_iterator_advance(it);
     }
-    
+
+    ioopm_hash_table_iterator_destroy(it);
     free_cart(cart);
 }
 
-void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
+void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount) {
+    
+}
+
+
 void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 size_t calc_costs(ioopm_hash_table_t *cart);
 
