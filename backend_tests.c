@@ -1,5 +1,7 @@
 #include <CUnit/Basic.h>
+#include <stdlib.h>
 #include "backend.h"
+#include "hash_table.h"
 
 int init_suite(void) {
   // Change this function if you want to do something *before* you
@@ -13,25 +15,6 @@ int clean_suite(void) {
   return 0;
 }
 
-static size_t string_knr_hash(elem_t key)
-{
-    const char *str = key.s;
-    size_t result = 0;
-    while (*str != '\0')
-    {
-        result = result * 31 + ((unsigned char)*str);
-        str++;
-    }
-    return result;
-}
-
-static bool string_compare(elem_t str1, elem_t str2)
-{
-    const char *string1 = str1.s;
-    const char *string2 = str2.s;
-
-    return strcmp(string1, string2) == 0;
-}
 
 void add_remove(void){
   ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
@@ -40,8 +23,50 @@ void add_remove(void){
   char *desc = "En intressant bok";
   size_t price = 67;
   add_merchandise(ht_n, name, desc, price);
+  CU_ASSERT_FALSE(ioopm_hash_table_is_empty(ht_n));
   remove_merchandise(ht_n, ht_sl, name);
-  
+  CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht_n));
+  CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht_sl));
+  destructor(ht_n, ht_sl);
+}
+
+void list(void){
+  ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
+  ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
+  char *name = "Bok";
+  char *desc = "En intressant bok";
+  char **results;
+  char *expected_results[2];
+  expected_results[1]="Bok";
+  expected_results[0]="En intressant bok";
+  size_t price = 67;
+  add_merchandise(ht_n, name, desc, price);
+  CU_ASSERT_FALSE(ioopm_hash_table_is_empty(ht_n));
+  add_merchandise(ht_n, desc, name, price);
+  CU_ASSERT_EQUAL(ioopm_hash_table_size(ht_n), 2);
+  results = list_merchandise(ht_n);
+  for(int i = 0; i < 2; i++){
+    CU_ASSERT_TRUE(string_compare(string_elem(results[i]), string_elem(expected_results[i])));
+  }
+  free(results);
+  destructor(ht_n, ht_sl);
+}
+
+void edit(void){
+  ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
+  ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
+  char *name = "Bok";
+  char *desc = "En intressant bok";
+  size_t price = 67;
+  add_merchandise(ht_n, name, desc, price);
+  CU_ASSERT_FALSE(ioopm_hash_table_is_empty(ht_n));
+  edit_merchandise(ht_n, ht_sl, name, "Bock", desc, price);
+  edit_merchandise(ht_n, ht_sl, name, "Bock", "En bockig bock", price);
+  edit_merchandise(ht_n, ht_sl, name, "Bock", "En bockig bock", price);
+  edit_merchandise(ht_n, ht_sl, name, "Bock", "En bockig bock", 76);
+  CU_ASSERT_EQUAL(ioopm_hash_table_size(ht_n), 1);
+  CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht_n, string_elem("Bock")));
+  //Behöver fler asserts här!!
   destructor(ht_n, ht_sl);
 }
 
@@ -64,7 +89,8 @@ int main() {
   // name or description of the test, and the function that runs
   // the test in question. If you want to add another test, just
   // copy a line below and change the information'
-  if (CU_add_test(my_test_suite, "Lägger till ett item och tar bort det", add_remove) == NULL)
+  if (CU_add_test(my_test_suite, "Lägger till ett item och tar bort det", add_remove) == NULL ||
+      CU_add_test(my_test_suite, "Listtest", list) == NULL)
     {
       // If adding any of the tests fails, we tear down CUnit and exit
       CU_cleanup_registry();

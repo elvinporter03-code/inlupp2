@@ -7,13 +7,13 @@
 /// @param name the name of the item
 /// @param desc a description of the item
 /// @param prize the price of the item
-void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t prize);
+void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price);
 
 /// @brief Listar alla items 
 // Itererar genom alla items och skriver ut dessa i terminalen i batches om max 20, sedan får användaren välja att fortsätta eller sluta
 /// @param ht_n the db operated upon
-/// @return Array of string
-char *list_merchandise(ioopm_hash_table_t *ht_n);
+/// @return Array of strings
+char **list_merchandise(ioopm_hash_table_t *ht_n);
 
 /// @brief Removes merchandise completely from db
 // Loopar igenom alla locations med itemet och removear det, och sedan från htn också
@@ -27,7 +27,7 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
 /// @param ht_n 
 /// @param name 
 /// @param desc 
-/// @param prize 
+/// @param price 
 void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name_old, char *name_new, char *desc, size_t price);
 
 /// @brief Shows contents of locationlist

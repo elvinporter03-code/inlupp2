@@ -21,6 +21,25 @@ bool confirmation()
     return false;
 }
 
+void print_merchandise(char **to_print, size_t i){
+    size_t n = 0;
+    while (n < i) //Utprintningsfunktionen, måste brytas ut för att kunna köra tester
+    {
+        printf("%s \n", to_print[n]);
+        n++;
+        if (n % 20 == 0)
+        {
+            char *ans = ask_question_string("Vill du fortsätta? (Y/N)\n");
+            to_upper_case(ans);
+            if (ans[0] != 'Y')
+            {
+                free(ans);
+                return;
+            }
+        }
+    }
+}
+
 void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
 {
     char *name;
@@ -29,8 +48,8 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
     char *name_old;
     char *name_new;
     size_t price;
-    size_t cart_id;
-    char *results[ht_n->ht_size];
+    //size_t cart_id;
+    char **results;
     bool running = true;
     while (running)
     {
@@ -52,6 +71,8 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
 
         case 'L':
             results = list_merchandise(ht_n);
+            print_merchandise(results,ht_n->ht_size);
+            free(results);
             break;
 
         case 'D':
@@ -90,7 +111,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             break;
 
         case 'C':
-            create_cart();
+            //create_cart();
             break;
 
         case 'R':
@@ -98,11 +119,10 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             break;
 
         case '+':
-            cart_id = ask_question_int("Vilken Cart vill du lägga till items i? \n");
+            //cart_id = ask_question_int("Vilken Cart vill du lägga till items i? \n");
             //todo funktion för att hitta cart
             name = ask_question_string("Vilket item vill du lägga till? \n");
             //add_to_cart(cart, name, cart_id);
-            free(cart_id);
             free(name);
             break;
 

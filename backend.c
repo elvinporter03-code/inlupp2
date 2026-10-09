@@ -134,10 +134,10 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     }
 }
 
-char *list_merchandise(ioopm_hash_table_t *ht_n)
+char **list_merchandise(ioopm_hash_table_t *ht_n)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
-    char *result[ht_n->ht_size];
+    char **result = calloc(ht_n->ht_size, sizeof(char*));
     int i = 0;
     while (!ioopm_hash_table_iterator_at_end(it)) //Itererar över alla element i htn
     {
@@ -150,24 +150,7 @@ char *list_merchandise(ioopm_hash_table_t *ht_n)
     return result;
 }
 
-void print_merchandise(char *to_print, size_t i){
-    int n = 0;
-    while (n < i) //Utprintningsfunktionen, måste brytas ut för att kunna köra tester
-    {
-        printf("%s \n", to_print[n]);
-        n++;
-        if (n % 20 == 0)
-        {
-            char *ans = ask_question_string("Vill du fortsätta? (Y/N)\n");
-            to_upper_case(ans);
-            if (ans[0] != 'Y')
-            {
-                free(ans);
-                return;
-            }
-        }
-    }
-}
+
 
 //Hjälpfunktion som castar om pekarelementet från elem_t till en s_t 
 static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)

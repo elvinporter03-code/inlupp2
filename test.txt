@@ -2,6 +2,14 @@ A
 Bok
 En mycket spännande bok
 150
+A
+Bok2
+En smått spännande bok
+150
+A
+Kaffekopp
+Smaskigt morgonkaffe
+10
 L
 A
 Flaska
