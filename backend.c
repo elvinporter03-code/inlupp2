@@ -162,6 +162,7 @@ static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
     return NULL;
 }
 
+/*
 // samma som ovan fast hämtar loc_pair från locationslistan
 static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
 {
@@ -169,7 +170,7 @@ static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
     loc_pair_t *tmp = current.p;
     return tmp;
 }
-
+*/
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name)
 {
     elem_t tmp;
@@ -248,24 +249,13 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert));
 }
 
-void show_stock(ioopm_hash_table_t *ht_n, char *name)
-{
-    s_t *item_s = lookup_htn(ht_n, name);
-    if (item_s->item->stock != 0)
-    {
-        ioopm_list_iterator_t *it = ioopm_list_iterator_create(sort(item_s->locations));
-        while (!ioopm_list_iterator_at_end(it))
-        {
-            loc_pair_t *current = list_fetch(it);
-            printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
-            ioopm_list_iterator_advance(it);
-        }
-        ioopm_list_iterator_destroy(it);
-    }
-}
+
 
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf_in, size_t amount)
 {
+    if(!ioopm_hash_table_has_key(ht_n, string_elem(name))){
+        return;
+    }
     char *shelf = strdup(shelf_in);
     ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
     s_t *item = lookup_htn(ht_n, name);

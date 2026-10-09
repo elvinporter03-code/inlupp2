@@ -8,6 +8,22 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+void show_stock(ioopm_hash_table_t *ht_n, char *name)
+{
+    s_t *item_s = lookup_htn(ht_n, name);
+    if (item_s->item->stock != 0)
+    {
+        ioopm_list_iterator_t *it = ioopm_list_iterator_create(sort(item_s->locations));
+        while (!ioopm_list_iterator_at_end(it))
+        {
+            loc_pair_t *current = list_fetch(it);
+            printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
+            ioopm_list_iterator_advance(it);
+        }
+        ioopm_list_iterator_destroy(it);
+    }
+}
+
 bool confirmation()
 {
     char *ans = ask_question_string("Säker? (Y/N) \n");

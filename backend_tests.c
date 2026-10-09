@@ -70,6 +70,24 @@ void edit(void){
   destructor(ht_n, ht_sl);
 }
 
+void replenish_show_stock(void){
+  ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
+  ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
+  char *name = "Bok";
+  char *desc = "En intressant bok";
+  size_t price = 67;
+  add_merchandise(ht_n, name, desc, price);
+  replenish(ht_sl, ht_n, name, "C23", 3);
+  replenish(ht_sl, ht_n, name, "D22", 0); // Flera av samma men med invalid siffra, ska ändå lägga till 0 där
+  replenish(ht_sl, ht_n, "Hej", "C23", 3); // Invalid element
+  CU_ASSERT_EQUAL(ht_sl->ht_size, 2);
+  CU_ASSERT_FALSE(ioopm_hash_table_is_empty(ht_n));
+  remove_merchandise(ht_n, ht_sl, name);
+  CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht_n));
+  CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht_sl));
+  destructor(ht_n, ht_sl);
+}
+
 int main() {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -90,7 +108,8 @@ int main() {
   // the test in question. If you want to add another test, just
   // copy a line below and change the information'
   if (CU_add_test(my_test_suite, "Lägger till ett item och tar bort det", add_remove) == NULL ||
-      CU_add_test(my_test_suite, "Listtest", list) == NULL)
+      CU_add_test(my_test_suite, "Listtest", list) == NULL ||
+      CU_add_test(my_test_suite, "Listtest", replenish_show_stock) == NULL)
     {
       // If adding any of the tests fails, we tear down CUnit and exit
       CU_cleanup_registry();
