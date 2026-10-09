@@ -12,7 +12,8 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
 /// @brief Listar alla items 
 // Itererar genom alla items och skriver ut dessa i terminalen i batches om max 20, sedan får användaren välja att fortsätta eller sluta
 /// @param ht_n the db operated upon
-void list_merchandise(ioopm_hash_table_t *ht_n);
+/// @return Array of string
+char *list_merchandise(ioopm_hash_table_t *ht_n);
 
 /// @brief Removes merchandise completely from db
 // Loopar igenom alla locations med itemet och removear det, och sedan från htn också

@@ -7,44 +7,50 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+
+//Hjälpfunktion som friar upp alla pekare tillhörande locationslistan
 static void destroy_loc_pairs(ioopm_list_t *list)
 {
-    if(ioopm_list_is_empty(list)){
+    if(ioopm_list_is_empty(list)){ //Nullcheck för att undvika errors
         return;
     }
+
     ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
-    while (!ioopm_list_iterator_at_end(it))
+    while (!ioopm_list_iterator_at_end(it)) 
     {
         elem_t tmp = ioopm_list_iterator_current(it);
-        loc_pair_t *pair = tmp.p;
-        free(pair->shelf);
-        free(pair);
+        loc_pair_t *pair = tmp.p; //Hämtar och castar om pekaren till loc_pair_t
+
+        free(pair->shelf); //friar strängen inuti loc_pairet först
+        free(pair); //sedan resten
         ioopm_list_iterator_advance(it);
     }
     ioopm_list_iterator_destroy(it);
 }
 
-static void destroy_locations(ioopm_list_t *l){
-    destroy_loc_pairs(l);
+static void destroy_locations(ioopm_list_t *l){ //Tar bort hela locations listan i två steg
+    destroy_loc_pairs(l); // rensar upp alla pekare som list_destroy inte når
     ioopm_list_destroy(l);
-}   
+} 
 
+// Hjälpfunktion för att förstöra en S från htn, tar också in en bool som säger huruvida listan ska förstöras också
 static void destroy_entry_htn(s_t *S, bool destroy_list)
 {
-    if (S->item)
+    if (S->item) //Extra checks för att undvika segfaults
     {
-        if (S->item->desc)
+        if (S->item->desc) //friar djupaste strängen först, lämnar namnet kvar till den yttre funktionen att fria
             free(S->item->desc);
         free(S->item);
     }
-    if(destroy_list){
+
+    if(destroy_list){ //Förstör listan om hela S:n ska tas bort
         destroy_locations(S->locations);
         free(S);
     }
 }
 
 
-
+//Hashfunktionen som används i alla hashningar
 size_t string_knr_hash(elem_t key)
 {
     const char *str = key.s;
@@ -57,6 +63,7 @@ size_t string_knr_hash(elem_t key)
     return result;
 }
  
+// Våran strängjämförelsefunktion som används i hashtabellen
 bool string_compare(elem_t str1, elem_t str2)
 {
     const char *string1 = str1.s;
@@ -65,6 +72,7 @@ bool string_compare(elem_t str1, elem_t str2)
     return strcmp(string1, string2) == 0;
 }
 
+// Friar upp allt minne använt av htn och htsl
 void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(htn);
@@ -82,6 +90,7 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl)
     ioopm_hash_table_destroy(htsl);
 }
 
+// Todo, fixa en alfabetisk sorteringsfunktion
 ioopm_list_t *sort(ioopm_list_t *list)
 {
     // STUB
@@ -125,21 +134,27 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     }
 }
 
-void list_merchandise(ioopm_hash_table_t *ht_n)
+char *list_merchandise(ioopm_hash_table_t *ht_n)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
     char *result[ht_n->ht_size];
     int i = 0;
-    while (!ioopm_hash_table_iterator_at_end(it))
+    while (!ioopm_hash_table_iterator_at_end(it)) //Itererar över alla element i htn
     {
-        result[i] = it->current_entry->key.s;
+        //sparar varje element i resultat-arrayen och lägger till det i countern
+        result[i] = it->current_entry->key.s; 
         i++;
         ioopm_hash_table_iterator_advance(it);
     }
+    ioopm_hash_table_iterator_destroy(it);
+    return result;
+}
+
+void print_merchandise(char *to_print, size_t i){
     int n = 0;
-    while (n < i)
+    while (n < i) //Utprintningsfunktionen, måste brytas ut för att kunna köra tester
     {
-        printf("%s \n", result[n]);
+        printf("%s \n", to_print[n]);
         n++;
         if (n % 20 == 0)
         {
@@ -152,9 +167,9 @@ void list_merchandise(ioopm_hash_table_t *ht_n)
             }
         }
     }
-    ioopm_hash_table_iterator_destroy(it);
 }
 
+//Hjälpfunktion som castar om pekarelementet från elem_t till en s_t 
 static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
 {
     elem_t item;
@@ -164,6 +179,7 @@ static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
     return NULL;
 }
 
+// samma som ovan fast hämtar loc_pair från locationslistan
 static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
 {
     elem_t current = ioopm_list_iterator_current(it);
@@ -175,16 +191,17 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
 {
     elem_t tmp;
     s_t *item_s = lookup_htn(ht_n, name);
-    if(item_s == NULL){
+    if(item_s == NULL){ // nullcheck för att undvika segfaults
         puts("Hittade inte itemet som söks!");
         return;
     }
+
     ioopm_list_t *l = item_s->locations;
     if (!ioopm_list_is_empty(l))
     {
         ioopm_list_iterator_t *it = ioopm_list_iterator_create(l);
-        while (!ioopm_list_iterator_at_end(it))
-        {
+        while (!ioopm_list_iterator_at_end(it)) // Hämtar varje shelf från locationslistan
+        {                                       // Tar sedan bort dessa shelves från htsl
             elem_t to_cast = ioopm_list_iterator_current(it);
             loc_pair_t *casted = to_cast.p;
             ioopm_hash_table_remove(ht_sl, string_elem(casted->shelf), &tmp);
@@ -192,9 +209,10 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
         }
         ioopm_list_iterator_destroy(it);
     }
-    char *to_free = item_s->item->name;
-    char *name_copy = strdup(name);
-    destroy_entry_htn(item_s, true);
+
+    char *to_free = item_s->item->name; //Sparar undan nyckeln och namn-elemntet i S för att fria manuellt efteråt
+    char *name_copy = strdup(name); // Inte elegant men det funkar
+    destroy_entry_htn(item_s, true); //Tar bort och friar allt utrymme 
     ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
     free(name_copy);
     free(to_free);

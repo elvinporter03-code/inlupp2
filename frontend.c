@@ -29,6 +29,8 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
     char *name_old;
     char *name_new;
     size_t price;
+    size_t cart_id;
+    char *results[ht_n->ht_size];
     bool running = true;
     while (running)
     {
@@ -49,7 +51,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             break;
 
         case 'L':
-            list_merchandise(ht_n);
+            results = list_merchandise(ht_n);
             break;
 
         case 'D':
@@ -88,15 +90,24 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             break;
 
         case 'C':
+            create_cart();
             break;
 
         case 'R':
+            //remove_cart();
             break;
 
         case '+':
+            cart_id = ask_question_int("Vilken Cart vill du lägga till items i? \n");
+            //todo funktion för att hitta cart
+            name = ask_question_string("Vilket item vill du lägga till? \n");
+            //add_to_cart(cart, name, cart_id);
+            free(cart_id);
+            free(name);
             break;
 
         case '-':
+            
             break;
 
         case '=':

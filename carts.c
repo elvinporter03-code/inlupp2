@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "backend.h"
+
 
 static cart_t *cart_create()
 {
@@ -67,12 +69,12 @@ void ioopm_create_cart(cart_list_t *cart_list)
     ioopm_list_append(cart_list->carts, crt_elem(cart));
 }
 
-void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n) {
+void remove_cart(cart_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n) {
 
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandise);
     elem_t current_info;
     elem_t current_name;
-    elem_t current_S;
+    s_t current_S;
     elem_t result;
 
     while(!ioopm_hash_table_iterator_at_end(it)) {
@@ -87,19 +89,19 @@ void remove_cart(ioopm_hash_table_t *cart, ioopm_hash_table_t *ht_sl, ioopm_hash
 
         // ht_n available_stock:
         ioopm_hash_table_lookup(ht_n, current_name, &current_S);
-        current_S->item->available_stock += current_amount;
+        current_S.item->available_stock += current_amount;
 
 
         // ht_n locations:
-        ioopm_list_iterator_t *list_it = ioopm_list_iterator_create(current_S->locations);
+        ioopm_list_iterator_t *list_it = ioopm_list_iterator_create(current_S.locations);
         if (ioopm_list_iterator_at_end(list_it)) {
             //felmeddelande
         }
-
+        // Fylller på den första hyllan i listan med alla items som ska läggas tillbaka?
         elem_t tmp = ioopm_list_iterator_current(list_it);
         loc_pair_t *current_link = tmp.p;
-
         current_link->stock += current_amount;
+        
         /*
 
         while (!ioopm_list_iterator_at_end(list_it)) {
@@ -137,3 +139,4 @@ void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount) {
 void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 size_t calc_costs(ioopm_hash_table_t *cart);
 
+//Checkout
