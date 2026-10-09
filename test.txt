@@ -10,6 +10,10 @@ A
 Kaffekopp
 Smaskigt morgonkaffe
 10
+A
+Albatross
+En stor mf fågel
+10
 L
 A
 Flaska

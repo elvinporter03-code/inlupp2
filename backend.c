@@ -90,13 +90,6 @@ void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl)
     ioopm_hash_table_destroy(htsl);
 }
 
-// Todo, fixa en alfabetisk sorteringsfunktion
-ioopm_list_t *sort(ioopm_list_t *list)
-{
-    // STUB
-    return list;
-}
-
 
 
 // skapar en S:
@@ -134,6 +127,14 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     }
 }
 
+//Clankad jämförelsefunktion, den avrefererar a och b för att sedan skicka in dem i den riktiga jämförelsefunktionen strcasecmp
+static int cmp_ci(const void *a, const void *b)
+{
+    const char *sa = *(const char * const *)a;
+    const char *sb = *(const char * const *)b;
+    return strcasecmp(sa, sb);
+}
+
 char **list_merchandise(ioopm_hash_table_t *ht_n)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
@@ -147,6 +148,7 @@ char **list_merchandise(ioopm_hash_table_t *ht_n)
         ioopm_hash_table_iterator_advance(it);
     }
     ioopm_hash_table_iterator_destroy(it);
+    qsort(result, i, sizeof(char*), cmp_ci);
     return result;
 }
 
@@ -162,7 +164,7 @@ static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
     return NULL;
 }
 
-/*
+
 // samma som ovan fast hämtar loc_pair från locationslistan
 static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
 {
@@ -170,7 +172,7 @@ static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
     loc_pair_t *tmp = current.p;
     return tmp;
 }
-*/
+
 void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name)
 {
     elem_t tmp;
@@ -265,4 +267,20 @@ void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, 
     tmp->stock = amount;
     item->item->available_stock += amount;
     ioopm_list_append(item->locations, ptr_elem(tmp));
+}
+
+void show_stock(ioopm_hash_table_t *ht_n, char *name)
+{
+    s_t *item_s = lookup_htn(ht_n, name);
+    if (item_s->item->stock != 0)
+    {
+        ioopm_list_iterator_t *it = ioopm_list_iterator_create(item_s->locations);
+        while (!ioopm_list_iterator_at_end(it))
+        {
+            loc_pair_t *current = list_fetch(it);
+            printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
+            ioopm_list_iterator_advance(it);
+        }
+        ioopm_list_iterator_destroy(it);
+    }
 }
