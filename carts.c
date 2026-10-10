@@ -137,6 +137,8 @@ void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount) {
 
 
 void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
+
+
 size_t calc_costs(ioopm_hash_table_t *cart);
 
 //Checkout
