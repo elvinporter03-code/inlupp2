@@ -10,7 +10,7 @@
 #define ptr_elem(x) ((elem_t) { .p = (x) })
 #define st_elem(x) ((elem_t) { .st = (x) })
 #define crt_elem(x) ((elem_t) { .crt = (x) })
-#define cinfo_elem(x) ((elem_t) { .cinfo = (x) })
+#define cmerch_elem(x) ((elem_t) { .cmerch = (x) })
 
 typedef struct entry entry_t;
 typedef struct hash_table ioopm_hash_table_t;
@@ -21,7 +21,7 @@ typedef struct list ioopm_list_t;
 typedef struct list_node ioopm_list_node_t;
 typedef struct cart cart_t;
 typedef struct cart_list cart_list_t;
-typedef struct cart_info cart_info_t;
+typedef struct cart_merch cart_merch_t;
 
 
 typedef bool ioopm_eq_function(elem_t a, elem_t b);
@@ -35,7 +35,7 @@ union element {
   void *p;
   s_t *st;
   cart_t *crt;
-  cart_info_t *cinfo;
+  cart_merch_t *cmerch;
 };
 
 struct entry
@@ -83,7 +83,7 @@ struct S {
 
 struct cart {
     size_t id;
-    ioopm_hash_table_t *merchandise;
+    ioopm_hash_table_t *merchandises;
 };
 
 struct cart_list {
@@ -91,10 +91,9 @@ struct cart_list {
     size_t id_counter;
 };
 
-struct cart_info {
+struct cart_merch {
+    char *name;
     size_t amount;
-    char *shelf;
-    size_t price;
 };
 
 struct list_pair {
