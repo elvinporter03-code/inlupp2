@@ -76,6 +76,11 @@ void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
 /// @return total price
 size_t calc_costs(ioopm_hash_table_t *cart);
 
+/// @brief checks out a cart
+/// @param cart_list 
+/// @param cart_id 
+void checkout(cart_list_t *cart_list, size_t cart_id);
+
 void destructor(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl);
 
 size_t string_knr_hash(elem_t key);

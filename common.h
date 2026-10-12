@@ -8,6 +8,7 @@
 #define bool_elem(x)  ((elem_t) { .b = (x) })
 #define string_elem(x) ((elem_t) { .s = (x) })
 #define ptr_elem(x) ((elem_t) { .p = (x) })
+#define sizet_elem(x) ((elem_t) { .z = (x) })
 #define st_elem(x) ((elem_t) { .st = (x) })
 #define crt_elem(x) ((elem_t) { .crt = (x) })
 #define cmerch_elem(x) ((elem_t) { .cmerch = (x) })
@@ -33,6 +34,7 @@ union element {
   int i;
   bool b;
   void *p;
+  size_t z;
   s_t *st;
   cart_t *crt;
   cart_merch_t *cmerch;

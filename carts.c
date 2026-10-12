@@ -121,11 +121,12 @@ void remove_cart(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_
         ioopm_hash_table_lookup(ht_n, string_elem(merch->name), &S);
         S.item->available_stock += merch->amount;
 
-        // ht_n locations:
+        /*// ht_n locations:
         loc_pair_t *head = ioopm_list_head(S.locations).p;
         head->stock += merch->amount;
-
+        */
         ioopm_hash_table_iterator_advance(it);
+
     }
 
     ioopm_hash_table_iterator_destroy(it);
@@ -140,8 +141,9 @@ void remove_cart(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_
 void add_to_cart(cart_t *cart, ioopm_hash_table_t *ht_n, char *name, size_t amount) {
 
     // kolla så att amount är större än 0
-    if (amount <= 0) {
+    if (amount == 0) {
         printf("You must add at least 1 element to your cart\n");
+        return;
     }
 
     // kolla i ht så att varan finns
@@ -159,8 +161,42 @@ void add_to_cart(cart_t *cart, ioopm_hash_table_t *ht_n, char *name, size_t amou
         return;
     }
 
+    /* // minska locations
+    size_t amount_temp = amount;
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(S.st->locations);
+    loc_pair_t *current;
+    while (amount_temp > 0) {
+
+        if (ioopm_list_iterator_at_end(it)) {
+            printf("Not enought stock in locations, does not match availible stock\n");
+            ioopm_list_iterator_destroy(it);
+            return;
+        }
+
+        current = ioopm_list_iterator_current(it).p;
+
+        if (current->stock > 0) {
+
+            if (current->stock > amount_temp) {
+                current->stock -= amount_temp;
+                amount_temp = 0;
+            }
+
+            else {
+                amount_temp -= current->stock;
+                current->stock = 0;
+            }
+        }
+
+        ioopm_list_iterator_advance(it);
+    }
+
+    ioopm_list_iterator_destroy(it);
+    */
+
     // minska av_stock
     S.st->item->available_stock -= amount;
+
 
     // kolla om namnet redan finns i cart
     elem_t cart_merch_old;
@@ -176,18 +212,67 @@ void add_to_cart(cart_t *cart, ioopm_hash_table_t *ht_n, char *name, size_t amou
         cart_merch_t *cart_merch_new = cart_merch_create();
         cart_merch_new->name = strdup(name);
         cart_merch_new->amount = amount;
-        ioopm_hash_table_insert(cart->merchandises, string_elem(name), cmerch_elem(cart_merch_new));
+        ioopm_hash_table_insert(cart->merchandises, string_elem(cart_merch_new->name), cmerch_elem(cart_merch_new));
     }
 }
 
 
-void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount){
+void remove_from_cart(cart_t *cart, char *name, size_t amount){
+    // kolla så amount inte är 0
+    if (amount == 0) {
+        printf("You must remove at least 1 element from your cart\n");
+        return;
+    }
 
+    // kolla så att name finns mha ht_lookup
+    elem_t cart_merch;
+    bool exists = ioopm_hash_table_lookup(cart->merchandises, string_elem(name), &cart_merch);
+    if (!exists) {
+        printf("the item %s does not exist in your cart", name);
+        return;
+    }
+
+    // kolla så dess stock inte är mindre än amount
+    if (cart_merch.cmerch->amount < amount) {
+        printf("the cart does not contain %zu of %s", amount, name);
+        return;
+    }
+
+    // kolla om det är lika stort ta då bort hela elementet och frigör det
+
+    if (cart_merch.cmerch->amount == amount) {
+        elem_t result;
+        ioopm_hash_table_remove(cart->merchandises, string_elem(name), &result);
+        free(result.cmerch->name);
+        free(result.cmerch);
+    }
+    // om stock är större minska bara det
+    else {
+        cart_merch.cmerch->amount -= amount;
+    }
 }
 
 
-size_t calc_costs(ioopm_hash_table_t *cart) {
+size_t calc_costs(cart_t *cart) {
 
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandises);
+    size_t total_cost = 0;
+    elem_t cart_merch;
+
+    while (!ioopm_hash_table_iterator_at_end(it)) {
+        cart_merch = ioopm_hash_table_iterator_current_value(it);
+        total_cost += cart_merch.cmerch->amount;
+        ioopm_hash_table_iterator_advance(it);
+    }
+
+    ioopm_hash_table_iterator_destroy(it);
+    return total_cost;
 }
 
-//Checkout
+void checkout(cart_list_t *cart_list, size_t cart_id) {
+    // kolla så att carten finns
+    // ta i loop och ta bort från stock
+    // och ta bort från shelfes
+    // beräkna kostnaden
+    // 
+}
