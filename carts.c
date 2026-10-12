@@ -15,7 +15,7 @@ static cart_t *cart_create() {
     return cart;
 }
 
-static cart_list_t *cart_list_create() {
+cart_list_t *cart_list_create() {
     cart_list_t *cart_list = calloc(1, sizeof(cart_list_t));
     cart_list->carts = ioopm_list_create();
     return cart_list;
@@ -84,6 +84,7 @@ static int find_cart_index(cart_list_t *cart_list, size_t cart_id) {
 }
 
 void ioopm_create_cart(cart_list_t *cart_list) {
+
     cart_t *cart = cart_create();
     cart_list->id_counter++;
     cart->id = cart_list->id_counter;
@@ -243,7 +244,7 @@ int ioopm_calc_costs(cart_t *cart, ioopm_hash_table_t *ht_n) {
     return total_cost;
 }
 
-void ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n) {
+int ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n) {
     
     // plocka ut cart index från listan:
     int index = find_cart_index(cart_list, cart_id);
@@ -251,7 +252,7 @@ void ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *
     // om cart inte finns i cart_list:
     if (index < 0) {
         printf("cart %zu does not exist\n", cart_id);
-        return;
+        return -2;
     }
 
     cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
@@ -281,7 +282,7 @@ void ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *
                 ioopm_list_iterator_destroy(shelf_it);
                 S.st->item->stock -= merch->amount - amount_temp;
                 ioopm_hash_table_iterator_destroy(merch_it);
-                return;
+                return -2;
             }
 
             current = ioopm_list_iterator_current(shelf_it).p;
@@ -312,7 +313,11 @@ void ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *
 
     int total_cost = ioopm_calc_costs(cart, ht_n);
 
-    // och ta bort från shelfes
-    // beräkna kostnaden
-    // 
+    // ta bort cart från cart_list:
+    ioopm_list_remove(cart_list->carts, (size_t) index);
+
+    // frigör cart:
+    free_cart(cart);
+
+    return total_cost;
 }

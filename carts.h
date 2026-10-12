@@ -1,7 +1,10 @@
 #pragma once
 #include "common.h"
 
-/// @brief creates a cart and adds it to cart_list
+
+cart_list_t *cart_list_create();
+
+/// @brief creates a cart with an unique ID and adds it to cart_list
 /// @param cart_list the list cart is added to
 void ioopm_create_cart(cart_list_t *cart_list);
 
@@ -34,4 +37,4 @@ int ioopm_calc_costs(cart_t *cart, ioopm_hash_table_t *ht_n);
 /// @param cart_list 
 /// @param cart_id 
 /// @param ht_n 
-void ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n);
+int ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n);
