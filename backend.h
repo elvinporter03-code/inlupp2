@@ -46,41 +46,6 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name);
 /// @param name 
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount);
 
-/// @brief Creates an empty shopping cart
-/// @return pointer to the cart
-ioopm_hash_table_t *create_cart();
-
-/// @brief frees the cart and destroys its content
-/// @param cart 
-void remove_cart(ioopm_hash_table_t *cart);
-
-/// @brief 
-// is the full amount in stock?
-// tar bort från db
-// lägger till i cart
-/// @param cart 
-/// @param name 
-/// @param amount 
-void add_to_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
-
-/// @brief Removes item from cart and puts it in a black hole
-// Kolla om mängden finns av itemet
-// Remove från cart
-/// @param cart 
-/// @param name 
-/// @param amount 
-void remove_from_cart(ioopm_hash_table_t *cart, char *name, size_t amount);
-
-/// @brief Amount * price of every merch_t in cart
-/// @param cart 
-/// @return total price
-size_t calc_costs(ioopm_hash_table_t *cart);
-
-/// @brief checks out a cart
-/// @param cart_list 
-/// @param cart_id 
-void checkout(cart_list_t *cart_list, size_t cart_id);
-
 void destructor(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl);
 
 size_t string_knr_hash(elem_t key);
