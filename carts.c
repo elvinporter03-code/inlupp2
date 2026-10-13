@@ -36,9 +36,9 @@ static void free_cart_merch(cart_t *cart) {
     elem_t c_value;
     while (!ioopm_hash_table_iterator_at_end(it)) {
         c_value = ioopm_hash_table_iterator_current_value(it);
+        ioopm_hash_table_iterator_advance(it);
         free(c_value.cmerch->name);
         free(c_value.cmerch);
-        ioopm_hash_table_iterator_advance(it);
     }
     ioopm_hash_table_iterator_destroy(it);
 }
@@ -49,7 +49,7 @@ static void free_cart(cart_t *cart) {
     free(cart);
 }
 
-static void free_cart_list(cart_list_t *cart_list) {
+void free_cart_list(cart_list_t *cart_list) {
     ioopm_list_iterator_t *it = ioopm_list_iterator_create(cart_list->carts);
     elem_t current;
     while (!ioopm_list_iterator_at_end(it)) {
@@ -83,13 +83,15 @@ static int find_cart_index(cart_list_t *cart_list, size_t cart_id) {
     return -1;
 }
 
-void ioopm_create_cart(cart_list_t *cart_list) {
+cart_t *ioopm_create_cart(cart_list_t *cart_list) {
 
     cart_t *cart = cart_create();
     cart_list->id_counter++;
     cart->id = cart_list->id_counter;
 
     ioopm_list_append(cart_list->carts, crt_elem(cart));
+
+    return cart;
 }
 
 void ioopm_remove_cart(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n) {
@@ -115,8 +117,9 @@ void ioopm_remove_cart(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_
         merch = (cart_merch_t*)ioopm_hash_table_iterator_current_value(it).cmerch;
 
         // ht_n available_stock:
-        ioopm_hash_table_lookup(ht_n, string_elem(merch->name), &S);
-        S.st->item->available_stock += merch->amount;
+        if (ioopm_hash_table_lookup(ht_n, string_elem(merch->name), &S)) {
+            S.st->item->available_stock += merch->amount;
+        }
 
         ioopm_hash_table_iterator_advance(it);
 
@@ -305,6 +308,7 @@ int ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *h
         }
 
         ioopm_list_iterator_destroy(shelf_it);
+        ioopm_hash_table_iterator_advance(merch_it);
 
         S.st->item->stock -= merch->amount - amount_temp;
     }

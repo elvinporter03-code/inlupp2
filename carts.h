@@ -4,9 +4,11 @@
 
 cart_list_t *cart_list_create();
 
+void free_cart_list(cart_list_t *cart_list);
+
 /// @brief creates a cart with an unique ID and adds it to cart_list
 /// @param cart_list the list cart is added to
-void ioopm_create_cart(cart_list_t *cart_list);
+cart_t *ioopm_create_cart(cart_list_t *cart_list);
 
 /// @brief removes a cart from cart_list and returns availible stock
 /// @param cart_list 
