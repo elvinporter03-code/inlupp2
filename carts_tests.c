@@ -3,6 +3,7 @@
 #include "backend.h"
 #include "carts.h"
 #include "hash_table.h"
+#include "linked_list.h"
 
 
 ioopm_hash_table_t *init() {
@@ -34,6 +35,48 @@ ioopm_hash_table_t *init() {
     return ht_n;
 }
 
+void test_create_destroy() {
+
+    ioopm_hash_table_t *ht_n = init();
+    ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
+
+    cart_list_t *cart_list = cart_list_create();
+    CU_ASSERT_TRUE(ioopm_list_is_empty(cart_list->carts));
+
+    // ta bort en tom cart
+    cart_t *cart1 = ioopm_create_cart(cart_list);
+    CU_ASSERT_EQUAL(ioopm_list_size(cart_list->carts), 1);
+    //ioopm_remove_cart(cart_list, 1, ht_n);
+    CU_ASSERT_TRUE(ioopm_list_is_empty(cart_list->carts));
+    
+    // ta bort en cart som inte finns
+    ioopm_remove_cart(cart_list, 4, ht_n);
+    CU_ASSERT_TRUE(ioopm_list_is_empty(cart_list->carts));
+
+    // lägg in en cart i en tom lista
+    cart_t *cart2 = ioopm_create_cart(cart_list);
+    CU_ASSERT_EQUAL(ioopm_list_size(cart_list->carts), 1);
+    CU_ASSERT_EQUAL(cart2->id, 2);
+
+    // lägg till en cart i en icke tom lista
+    cart_t *cart3 = ioopm_create_cart(cart_list);
+    CU_ASSERT_EQUAL(ioopm_list_size(cart_list->carts), 2);
+
+    char *name = "Bok";
+
+    // lägg till i cart
+    ioopm_add_to_cart(cart3, name, 10, ht_n);
+    
+    // ta bort en icke tom cart
+    ioopm_remove_cart(cart_list, 3, ht_n);
+    CU_ASSERT_EQUAL(ioopm_list_size(cart_list->carts), 1);
+
+
+    free_cart_list(cart_list);
+    destructor(ht_n, ht_sl);
+
+}
+
 void test_add() {
     cart_list_t *cart_list = cart_list_create();
     cart_t *cart = ioopm_create_cart(cart_list);
@@ -42,40 +85,43 @@ void test_add() {
     
 
     char *name = "Bok";
-    size_t amount = 10;
-
     char *name2 = "Saft";
-    size_t amount2 = 5;
+    char *name3 = "Äpple";
 
-    size_t amount3 = 2;
-    size_t amount4 = 3;
-
-    ioopm_add_to_cart(cart, ht_n, name, amount);
+    // lägg till på tom
+    ioopm_add_to_cart(cart, name, 10, ht_n);
     int cost1 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost1, 150);
 
-    ioopm_add_to_cart(cart, ht_n, name2, amount2);
+    // lägg till på icke tom
+    ioopm_add_to_cart(cart, name2, 5, ht_n);
     int cost2 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost2, 250);
 
-    ioopm_add_to_cart(cart, ht_n, name, amount3);
+    // fyll på en och använd hela availible stock
+    ioopm_add_to_cart(cart, name, 2, ht_n);
     int cost3 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost3, 280);
 
-    ioopm_add_to_cart(cart, ht_n, name2, amount4);
+    // lägg till fler än vad som finns i stock
+    ioopm_add_to_cart(cart, name2, 3, ht_n);
     int cost4 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost3, cost4);
 
-    ioopm_add_to_cart(cart, ht_n, name2, 0);
+    // lägg till 0
+    ioopm_add_to_cart(cart, name2, 0, ht_n);
     int cost5 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost3, cost5);
+
+    // en som inte finnt i ht_n
+    ioopm_add_to_cart(cart, name3, 5, ht_n);
+    CU_ASSERT_EQUAL(ioopm_calc_costs(cart, ht_n), cost3);
 
     //ioopm_remove_cart(cart_list, 1, ht_n);
     free_cart_list(cart_list);
 
     destructor(ht_n, ht_sl);
 }
-
 
 void test_remove() {
     cart_list_t *cart_list = cart_list_create();
@@ -85,35 +131,55 @@ void test_remove() {
     
 
     char *name = "Bok";
-    size_t amount = 10;
+    size_t amount = 11;
 
     char *name2 = "Saft";
     size_t amount2 = 5;
 
+    char *name3 = "Äpple";
 
-    ioopm_add_to_cart(cart, ht_n, name, amount);
+
+    ioopm_add_to_cart(cart, name, amount, ht_n);
     int cost1 = ioopm_calc_costs(cart, ht_n);
-    CU_ASSERT_EQUAL(cost1, 150);
+    CU_ASSERT_EQUAL(cost1, 165);
 
-    ioopm_add_to_cart(cart, ht_n, name2, amount2);
+    // med en i 
+    ioopm_remove_from_cart(cart, name, 1, ht_n);
+    CU_ASSERT_EQUAL(ioopm_calc_costs(cart, ht_n), 150);
+
+    ioopm_add_to_cart(cart, name2, amount2, ht_n);
     int cost2 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost2, 250);
 
+    // med flera i
     ioopm_remove_from_cart(cart, name, 5, ht_n);
     int cost3 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost3, 175);
 
+    // ta bort en helt
     ioopm_remove_from_cart(cart, name2, 5, ht_n);
     int cost4 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost4, 75);
 
+    // ta bort för många
     ioopm_remove_from_cart(cart, name, 7, ht_n);
     int cost5 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost5, 75);
 
+    // ta bort 0 st
     ioopm_remove_from_cart(cart, name, 0, ht_n);
     int cost6 = ioopm_calc_costs(cart, ht_n);
     CU_ASSERT_EQUAL(cost6, 75);
+
+    // ta bort en som redan tagits bort från cart
+    ioopm_remove_from_cart(cart, name2, 6, ht_n);
+    CU_ASSERT_EQUAL(ioopm_calc_costs(cart, ht_n), 75);
+
+    // ta bort en som inte finns i cart
+    ioopm_remove_from_cart(cart, name3, 5, ht_n);
+    CU_ASSERT_EQUAL(ioopm_calc_costs(cart, ht_n), 75);
+
+
 
     //int total_cost = ioopm_checkout(cart_list, 1, ht_n);
     //CU_ASSERT_EQUAL(cost6, total_cost);
@@ -123,6 +189,9 @@ void test_remove() {
     destructor(ht_n, ht_sl);
 }
 
+void test_checkout() {
+    // stub
+}
 
 
 int main()
@@ -134,6 +203,15 @@ int main()
         CU_add_suite("Hash table iterator test suite", NULL, NULL);
 
     if (my_test_suite == NULL)
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    // TEST CREATE DESTROY:
+    if (CU_add_test(my_test_suite,
+                    "test create destroy",
+                    test_create_destroy) == NULL)
     {
         CU_cleanup_registry();
         return CU_get_error();
