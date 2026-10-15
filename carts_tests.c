@@ -190,7 +190,40 @@ void test_remove() {
 }
 
 void test_checkout() {
-    // stub
+
+    ioopm_hash_table_t *ht_n = init();
+    ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
+    cart_list_t *cart_list = cart_list_create();
+
+    // kod 
+
+    // på icke existerande kundvagn
+    int cost = ioopm_checkout(cart_list, 1, ht_n);
+    CU_ASSERT_EQUAL(cost, -2);
+
+    // lägg in två, fyll name2 i första och lägg in name1 i den också. låt den andra vara tom.
+    cart_t *cart1 = ioopm_create_cart(cart_list);
+    cart_t *cart2 = ioopm_create_cart(cart_list);
+
+    char *name = "Bok";
+    char *name2 = "Saft";
+
+    ioopm_add_to_cart(cart1, name, 4, ht_n);
+    ioopm_add_to_cart(cart1, name2, 7, ht_n);
+
+    // ta bort den med merch i, ska ge ett tal, kolla så att listsize är 1
+    cost = ioopm_checkout(cart_list, 1, ht_n);
+    CU_ASSERT_EQUAL(cost, 200);
+    CU_ASSERT_EQUAL(ioopm_list_size(cart_list->carts), 1);
+
+    // ta bort den sista och kolla så is empty stämmer och att det är 0
+    cost = ioopm_checkout(cart_list, 2, ht_n);
+    CU_ASSERT_EQUAL(cost, 0);
+    CU_ASSERT_TRUE(ioopm_list_is_empty(cart_list->carts));
+
+
+    free_cart_list(cart_list);
+    destructor(ht_n, ht_sl);
 }
 
 
