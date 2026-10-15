@@ -108,6 +108,9 @@ void ioopm_list_insert(ioopm_list_t *list, size_t index, elem_t value)
 
 elem_t ioopm_list_remove(ioopm_list_t *list, size_t index) 
 {
+    if(list->size == 0){
+        return string_elem("Empty list!");
+    }
     //Hittar föregående och nuvarande nod
     ioopm_list_node_t *previous = find_previous(list->first, index);
     ioopm_list_node_t *current = previous->tail;

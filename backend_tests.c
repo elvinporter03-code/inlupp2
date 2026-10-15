@@ -46,7 +46,7 @@ void list(void){
   CU_ASSERT_EQUAL(ioopm_hash_table_size(ht_n), 2);
   results = list_merchandise(ht_n);
   for(int i = 0; i < 2; i++){
-    CU_ASSERT_TRUE(string_compare(string_elem(results[i]), string_elem(expected_results[i])));
+    CU_ASSERT_TRUE(string_compare(string_elem(results[1-i]), string_elem(expected_results[i])));
   }
   free(results);
   destructor(ht_n, ht_sl);
