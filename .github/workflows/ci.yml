@@ -2,11 +2,11 @@ name: C CI with CUnit
 
 on:
   pull_request:
-    branches: [ "main" ] 
+    branches: [ "main" ]
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -17,9 +17,11 @@ jobs:
         sudo apt-get install -y libcunit1 libcunit1-doc libcunit1-dev
 
     - name: Build project
-      run: make carts_tests
-           make backend_tests
-
+      run: |
+        gcc -Wall -Wextra -g carts_tests.c carts.c backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c -o carts_tests -lcunit
+        gcc -Wall -Wextra -g backend_tests.c backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c -o tests -lcunit
 
     - name: Run tests
-      run: make test
+      run: |
+        ./tests
+        ./carts_tests
