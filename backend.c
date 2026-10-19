@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-//Hejsan
+//Inte hej längre
 
 //Hjälpfunktion som friar upp alla pekare tillhörande locationslistan
 static void destroy_loc_pairs(ioopm_list_t *list)
