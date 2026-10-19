@@ -113,8 +113,6 @@ static s_t *S_create(char *name, char *desc_in, size_t price)
 
 void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price)
 {
-    // skapa en S
-    s_t *item = S_create(name, desc, price);
 
     // lägg in den i ht_n med name som nyckel ger felmeddelande om den redan finns
     bool exists = ioopm_hash_table_has_key(ht_n, string_elem(name));
@@ -124,6 +122,8 @@ void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t pr
     }
     else
     {
+        // skapa en S
+        s_t *item = S_create(name, desc, price);
         ioopm_hash_table_insert(ht_n, string_elem(item->item->name), st_elem(item));
     }
 }

@@ -41,7 +41,7 @@ void print_merchandise(char **to_print, size_t i){
     }
 }
 
-void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
+void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, cart_list_t *cart_list)
 {
     char *name;
     char *desc;
@@ -51,7 +51,6 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
     size_t price;
     //size_t cart_id;
     char **results;
-    cart_list_t *cart_list = cart_list_create();
     bool running = true;
     while (running)
     {
@@ -169,8 +168,9 @@ int main()
 {
     ioopm_hash_table_t *ht_n = ioopm_hash_table_create(string_knr_hash, string_compare);
     ioopm_hash_table_t *ht_sl = ioopm_hash_table_create(string_knr_hash, string_compare);
+    cart_list_t *cart_list = cart_list_create();
 
-    main_loop(ht_sl, ht_n);
+    main_loop(ht_sl, ht_n, cart_list);
 
     destructor(ht_n, ht_sl); // shoppingcarts
     return 0;
