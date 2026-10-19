@@ -105,6 +105,7 @@ cart_t *ioopm_create_cart(cart_list_t *cart_list) {
 
     ioopm_list_append(cart_list->carts, crt_elem(cart));
 
+    printf("Your cart id is: %zu\n", cart_list->id_counter);
     return cart;
 }
 
@@ -146,7 +147,18 @@ void ioopm_remove_cart(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_
     free_cart(cart);
 }
 
-void ioopm_add_to_cart(cart_t *cart, char *name, size_t amount, ioopm_hash_table_t *ht_n) {
+void ioopm_add_to_cart(cart_list_t *cart_list, size_t cart_id, char *name, size_t amount, ioopm_hash_table_t *ht_n) {
+
+    // plocka ut varukorgens index i listan av korgar
+    int index = find_cart_index(cart_list, cart_id);
+
+    // returnerar ifall kundvagnen inte finns i listan
+    if (index < 0) {
+        printf("cart %zu does not exist\n", cart_id);
+        return;
+    }
+
+    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
 
     // kolla så att amount är större än 0
     if (amount == 0) {
@@ -191,7 +203,18 @@ void ioopm_add_to_cart(cart_t *cart, char *name, size_t amount, ioopm_hash_table
     }
 }
 
-void ioopm_remove_from_cart(cart_t *cart, char *name, size_t amount, ioopm_hash_table_t *ht_n) {
+void ioopm_remove_from_cart(cart_list_t *cart_list, size_t cart_id, char *name, size_t amount, ioopm_hash_table_t *ht_n) {
+
+    // plocka ut varukorgens index i listan av korgar
+    int index = find_cart_index(cart_list, cart_id);
+
+    // returnerar ifall kundvagnen inte finns i listan
+    if (index < 0) {
+        printf("cart %zu does not exist\n", cart_id);
+        return;
+    }
+
+    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
 
     // kolla så att antalet inte är noll
     if (amount == 0) {
@@ -239,7 +262,18 @@ void ioopm_remove_from_cart(cart_t *cart, char *name, size_t amount, ioopm_hash_
 
 }
 
-int ioopm_calc_costs(cart_t *cart, ioopm_hash_table_t *ht_n) {
+int ioopm_calc_costs(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n) {
+
+    // plocka ut varukorgens index i listan av korgar
+    int index = find_cart_index(cart_list, cart_id);
+
+    // returnerar ifall kundvagnen inte finns i listan
+    if (index < 0) {
+        printf("cart %zu does not exist\n", cart_id);
+        return -1;
+    }
+
+    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
 
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandises);
     int total_cost = 0;
@@ -334,7 +368,7 @@ int ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *h
 
     ioopm_hash_table_iterator_destroy(merch_it);
 
-    int total_cost = ioopm_calc_costs(cart, ht_n);
+    int total_cost = ioopm_calc_costs(cart_list, cart_id, ht_n);
 
     // ta bort varukorgen från listan av korgar:
     ioopm_list_remove(cart_list->carts, (size_t) index);

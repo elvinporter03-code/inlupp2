@@ -13,395 +13,395 @@
         -:    9:
         -:   10:
         -:   11://Hjälpfunktion som friar upp alla pekare tillhörande locationslistan
-function destroy_loc_pairs called 4 returned 100% blocks executed 100%
-        4:   12:static void destroy_loc_pairs(ioopm_list_t *list)
+function destroy_loc_pairs called 19 returned 100% blocks executed 100%
+       19:   12:static void destroy_loc_pairs(ioopm_list_t *list)
         -:   13:{
-        4:   14:    if(ioopm_list_is_empty(list)){ //Nullcheck för att undvika errors
-call    0 returned 4
-branch  1 taken 3 (fallthrough)
-branch  2 taken 1
-        3:   15:        return;
+       19:   14:    if(ioopm_list_is_empty(list)){ //Nullcheck för att undvika errors
+call    0 returned 19
+branch  1 taken 10 (fallthrough)
+branch  2 taken 9
+       10:   15:        return;
         -:   16:    }
         -:   17:
-        1:   18:    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
-call    0 returned 1
-        3:   19:    while (!ioopm_list_iterator_at_end(it)) 
-call    0 returned 3
-branch  1 taken 2
-branch  2 taken 1 (fallthrough)
+        9:   18:    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+call    0 returned 9
+       25:   19:    while (!ioopm_list_iterator_at_end(it)) 
+call    0 returned 25
+branch  1 taken 16
+branch  2 taken 9 (fallthrough)
         -:   20:    {
-        2:   21:        elem_t tmp = ioopm_list_iterator_current(it);
-call    0 returned 2
-        2:   22:        loc_pair_t *pair = tmp.p; //Hämtar och castar om pekaren till loc_pair_t
+       16:   21:        elem_t tmp = ioopm_list_iterator_current(it);
+call    0 returned 16
+       16:   22:        loc_pair_t *pair = tmp.p; //Hämtar och castar om pekaren till loc_pair_t
         -:   23:
-        2:   24:        free(pair->shelf); //friar strängen inuti loc_pairet först
-        2:   25:        free(pair); //sedan resten
-        2:   26:        ioopm_list_iterator_advance(it);
-call    0 returned 2
+       16:   24:        free(pair->shelf); //friar strängen inuti loc_pairet först
+       16:   25:        free(pair); //sedan resten
+       16:   26:        ioopm_list_iterator_advance(it);
+call    0 returned 16
         -:   27:    }
-        1:   28:    ioopm_list_iterator_destroy(it);
-call    0 returned 1
+        9:   28:    ioopm_list_iterator_destroy(it);
+call    0 returned 9
         -:   29:}
         -:   30:
-function destroy_locations called 4 returned 100% blocks executed 100%
-        4:   31:static void destroy_locations(ioopm_list_t *l){ //Tar bort hela locations listan i två steg
-        4:   32:    destroy_loc_pairs(l); // rensar upp alla pekare som list_destroy inte når
-call    0 returned 4
-        4:   33:    ioopm_list_destroy(l);
-call    0 returned 4
-        4:   34:} 
+function destroy_locations called 19 returned 100% blocks executed 100%
+       19:   31:static void destroy_locations(ioopm_list_t *l){ //Tar bort hela locations listan i två steg
+       19:   32:    destroy_loc_pairs(l); // rensar upp alla pekare som list_destroy inte når
+call    0 returned 19
+       19:   33:    ioopm_list_destroy(l);
+call    0 returned 19
+       19:   34:} 
         -:   35:
         -:   36:// Hjälpfunktion för att förstöra en S från htn, tar också in en bool som säger huruvida listan ska förstöras också
-function destroy_entry_htn called 4 returned 100% blocks executed 100%
-        4:   37:static void destroy_entry_htn(s_t *S, bool destroy_list)
+function destroy_entry_htn called 21 returned 100% blocks executed 100%
+       21:   37:static void destroy_entry_htn(s_t *S, bool destroy_list)
         -:   38:{
-        4:   39:    if (S->item) //Extra checks för att undvika segfaults
-branch  0 taken 4 (fallthrough)
+       21:   39:    if (S->item) //Extra checks för att undvika segfaults
+branch  0 taken 21 (fallthrough)
 branch  1 taken 0
         -:   40:    {
-        4:   41:        if (S->item->desc) //friar djupaste strängen först, lämnar namnet kvar till den yttre funktionen att fria
-branch  0 taken 4 (fallthrough)
+       21:   41:        if (S->item->desc) //friar djupaste strängen först, lämnar namnet kvar till den yttre funktionen att fria
+branch  0 taken 21 (fallthrough)
 branch  1 taken 0
-        4:   42:            free(S->item->desc);
-        4:   43:        free(S->item);
+       21:   42:            free(S->item->desc);
+       21:   43:        free(S->item);
         -:   44:    }
         -:   45:
-        4:   46:    if(destroy_list){ //Förstör listan om hela S:n ska tas bort
-branch  0 taken 4 (fallthrough)
-branch  1 taken 0
-        4:   47:        destroy_locations(S->locations);
-call    0 returned 4
-        4:   48:        free(S);
+       21:   46:    if(destroy_list){ //Förstör listan om hela S:n ska tas bort
+branch  0 taken 19 (fallthrough)
+branch  1 taken 2
+       19:   47:        destroy_locations(S->locations);
+call    0 returned 19
+       19:   48:        free(S);
         -:   49:    }
-        4:   50:}
+       21:   50:}
         -:   51:
         -:   52:
         -:   53://Hashfunktionen som används i alla hashningar
-function string_knr_hash called 21 returned 100% blocks executed 100%
-       21:   54:size_t string_knr_hash(elem_t key)
+function string_knr_hash called 131 returned 100% blocks executed 100%
+      131:   54:size_t string_knr_hash(elem_t key)
         -:   55:{
-       21:   56:    const char *str = key.s;
-       21:   57:    size_t result = 0;
-      112:   58:    while (*str != '\0')
-branch  0 taken 91
-branch  1 taken 21 (fallthrough)
+      131:   56:    const char *str = key.s;
+      131:   57:    size_t result = 0;
+      584:   58:    while (*str != '\0')
+branch  0 taken 453
+branch  1 taken 131 (fallthrough)
         -:   59:    {
-       91:   60:        result = result * 31 + ((unsigned char)*str);
-       91:   61:        str++;
+      453:   60:        result = result * 31 + ((unsigned char)*str);
+      453:   61:        str++;
         -:   62:    }
-       21:   63:    return result;
+      131:   63:    return result;
         -:   64:}
         -:   65: 
         -:   66:// Våran strängjämförelsefunktion som används i hashtabellen
-function string_compare called 12 returned 100% blocks executed 100%
-       12:   67:bool string_compare(elem_t str1, elem_t str2)
+function string_compare called 75 returned 100% blocks executed 100%
+       75:   67:bool string_compare(elem_t str1, elem_t str2)
         -:   68:{
-       12:   69:    const char *string1 = str1.s;
-       12:   70:    const char *string2 = str2.s;
+       75:   69:    const char *string1 = str1.s;
+       75:   70:    const char *string2 = str2.s;
         -:   71:
-       12:   72:    return strcmp(string1, string2) == 0;
+       75:   72:    return strcmp(string1, string2) == 0;
         -:   73:}
         -:   74:
         -:   75:// Friar upp allt minne använt av htn och htsl
-function destructor called 3 returned 100% blocks executed 100%
-        3:   76:void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl)
+function destructor called 15 returned 100% blocks executed 100%
+       15:   76:void destructor(ioopm_hash_table_t *htn, ioopm_hash_table_t *htsl)
         -:   77:{
-        3:   78:    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(htn);
-call    0 returned 3
-        5:   79:    while (!ioopm_hash_table_iterator_at_end(it))
-call    0 returned 5
-branch  1 taken 2
-branch  2 taken 3 (fallthrough)
+       15:   78:    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(htn);
+call    0 returned 15
+       30:   79:    while (!ioopm_hash_table_iterator_at_end(it))
+call    0 returned 30
+branch  1 taken 15
+branch  2 taken 15 (fallthrough)
         -:   80:    {
-        2:   81:        elem_t tmp = ioopm_hash_table_iterator_current_value(it);
-call    0 returned 2
-        2:   82:        s_t *current = tmp.p;
-        2:   83:        char *to_free = current->item->name;
-        2:   84:        destroy_entry_htn(current, true);
-call    0 returned 2
-        2:   85:        free(to_free);
-        2:   86:        ioopm_hash_table_iterator_advance(it);
-call    0 returned 2
+       15:   81:        elem_t tmp = ioopm_hash_table_iterator_current_value(it);
+call    0 returned 15
+       15:   82:        s_t *current = tmp.p;
+       15:   83:        char *to_free = current->item->name;
+       15:   84:        destroy_entry_htn(current, true);
+call    0 returned 15
+       15:   85:        free(to_free);
+       15:   86:        ioopm_hash_table_iterator_advance(it);
+call    0 returned 15
         -:   87:    }
-        3:   88:    ioopm_hash_table_iterator_destroy(it);
-call    0 returned 3
-        3:   89:    ioopm_hash_table_destroy(htn);
-call    0 returned 3
-        3:   90:    ioopm_hash_table_destroy(htsl);
-call    0 returned 3
-        3:   91:}
+       15:   88:    ioopm_hash_table_iterator_destroy(it);
+call    0 returned 15
+       15:   89:    ioopm_hash_table_destroy(htn);
+call    0 returned 15
+       15:   90:    ioopm_hash_table_destroy(htsl);
+call    0 returned 15
+       15:   91:}
         -:   92:
         -:   93:
         -:   94:
         -:   95:// skapar en S:
-function S_create called 4 returned 100% blocks executed 100%
-        4:   96:static s_t *S_create(char *name, char *desc_in, size_t price)
+function S_create called 20 returned 100% blocks executed 100%
+       20:   96:static s_t *S_create(char *name, char *desc_in, size_t price)
         -:   97:{   
-        4:   98:    char *desc = strdup(desc_in);
+       20:   98:    char *desc = strdup(desc_in);
         -:   99:
         -:  100:    // skapar merch
-        4:  101:    merch_t *merch = calloc(1, sizeof(merch_t));
-        4:  102:    merch->name = strdup(name); // behöver strdupas för att destructorn ska funka som jag vill med nyckeln
-        4:  103:    merch->desc = desc; // behöver inte strdupas eftersom vi inte använder den för något annat
-        4:  104:    merch->price = price;
+       20:  101:    merch_t *merch = calloc(1, sizeof(merch_t));
+       20:  102:    merch->name = strdup(name); // behöver strdupas för att destructorn ska funka som jag vill med nyckeln
+       20:  103:    merch->desc = desc; // behöver inte strdupas eftersom vi inte använder den för något annat
+       20:  104:    merch->price = price;
         -:  105:
         -:  106:    // skapar S med merch och null
-        4:  107:    s_t *S = calloc(1, sizeof(s_t));
-        4:  108:    S->item = merch;
-        4:  109:    S->locations = ioopm_list_create();
-call    0 returned 4
-        4:  110:    return S;
+       20:  107:    s_t *S = calloc(1, sizeof(s_t));
+       20:  108:    S->item = merch;
+       20:  109:    S->locations = ioopm_list_create();
+call    0 returned 20
+       20:  110:    return S;
         -:  111:}
         -:  112:
-function add_merchandise called 4 returned 100% blocks executed 86%
-        4:  113:void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price)
+function add_merchandise called 20 returned 100% blocks executed 100%
+       20:  113:void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price)
         -:  114:{
         -:  115:    // skapa en S
-        4:  116:    s_t *item = S_create(name, desc, price);
-call    0 returned 4
+       20:  116:    s_t *item = S_create(name, desc, price);
+call    0 returned 20
         -:  117:
         -:  118:    // lägg in den i ht_n med name som nyckel ger felmeddelande om den redan finns
-        4:  119:    bool exists = ioopm_hash_table_has_key(ht_n, string_elem(name));
-call    0 returned 4
-        4:  120:    if (exists)
-branch  0 taken 0 (fallthrough)
-branch  1 taken 4
+       20:  119:    bool exists = ioopm_hash_table_has_key(ht_n, string_elem(name));
+call    0 returned 20
+       20:  120:    if (exists)
+branch  0 taken 1 (fallthrough)
+branch  1 taken 19
         -:  121:    {
-    #####:  122:        printf("%s already exists\n", name);
-call    0 never executed
+        1:  122:        printf("%s already exists\n", name);
+call    0 returned 1
         -:  123:    }
         -:  124:    else
         -:  125:    {
-        4:  126:        ioopm_hash_table_insert(ht_n, string_elem(item->item->name), st_elem(item));
-call    0 returned 4
+       19:  126:        ioopm_hash_table_insert(ht_n, string_elem(item->item->name), st_elem(item));
+call    0 returned 19
         -:  127:    }
-        4:  128:}
+       20:  128:}
         -:  129:
         -:  130://Clankad jämförelsefunktion, den avrefererar a och b för att sedan skicka in dem i den riktiga jämförelsefunktionen strcasecmp
-function cmp_ci called 1 returned 100% blocks executed 100%
-        1:  131:static int cmp_ci(const void *a, const void *b)
+function cmp_ci called 3 returned 100% blocks executed 100%
+        3:  131:static int cmp_ci(const void *a, const void *b)
         -:  132:{
-        1:  133:    const char *sa = *(const char * const *)a;
-        1:  134:    const char *sb = *(const char * const *)b;
-        1:  135:    return strcasecmp(sa, sb);
+        3:  133:    const char *sa = *(const char * const *)a;
+        3:  134:    const char *sb = *(const char * const *)b;
+        3:  135:    return strcasecmp(sa, sb);
         -:  136:}
         -:  137:
-function list_merchandise called 1 returned 100% blocks executed 100%
-        1:  138:char **list_merchandise(ioopm_hash_table_t *ht_n)
+function list_merchandise called 3 returned 100% blocks executed 100%
+        3:  138:char **list_merchandise(ioopm_hash_table_t *ht_n)
         -:  139:{
-        1:  140:    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
-call    0 returned 1
-        1:  141:    char **result = calloc(ht_n->ht_size, sizeof(char*));
-        1:  142:    int i = 0;
-        3:  143:    while (!ioopm_hash_table_iterator_at_end(it)) //Itererar över alla element i htn
+        3:  140:    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht_n);
 call    0 returned 3
-branch  1 taken 2
-branch  2 taken 1 (fallthrough)
+        3:  141:    char **result = calloc(ht_n->ht_size, sizeof(char*));
+        3:  142:    int i = 0;
+        8:  143:    while (!ioopm_hash_table_iterator_at_end(it)) //Itererar över alla element i htn
+call    0 returned 8
+branch  1 taken 5
+branch  2 taken 3 (fallthrough)
         -:  144:    {
         -:  145:        //sparar varje element i resultat-arrayen och lägger till det i countern
-        2:  146:        result[i] = it->current_entry->key.s; 
-        2:  147:        i++;
-        2:  148:        ioopm_hash_table_iterator_advance(it);
-call    0 returned 2
+        5:  146:        result[i] = it->current_entry->key.s; 
+        5:  147:        i++;
+        5:  148:        ioopm_hash_table_iterator_advance(it);
+call    0 returned 5
         -:  149:    }
-        1:  150:    ioopm_hash_table_iterator_destroy(it);
-call    0 returned 1
-        1:  151:    qsort(result, i, sizeof(char*), cmp_ci);
-call    0 returned 1
-        1:  152:    return result;
+        3:  150:    ioopm_hash_table_iterator_destroy(it);
+call    0 returned 3
+        3:  151:    qsort(result, i, sizeof(char*), cmp_ci);
+call    0 returned 3
+        3:  152:    return result;
         -:  153:}
         -:  154:
         -:  155:
         -:  156:
         -:  157://Hjälpfunktion som castar om pekarelementet från elem_t till en s_t 
-function lookup_htn called 4 returned 100% blocks executed 83%
-        4:  158:static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
+function lookup_htn called 26 returned 100% blocks executed 100%
+       26:  158:static s_t *lookup_htn(ioopm_hash_table_t *ht_n, char *name)
         -:  159:{
         -:  160:    elem_t item;
-        4:  161:    if(ioopm_hash_table_lookup(ht_n, string_elem(name), &item)){
-call    0 returned 4
-branch  1 taken 4 (fallthrough)
-branch  2 taken 0
-        4:  162:        return item.p;
+       26:  161:    if(ioopm_hash_table_lookup(ht_n, string_elem(name), &item)){
+call    0 returned 26
+branch  1 taken 25 (fallthrough)
+branch  2 taken 1
+       25:  162:        return item.p;
         -:  163:    }
-    #####:  164:    return NULL;
+        1:  164:    return NULL;
         -:  165:}
         -:  166:
         -:  167:
         -:  168:// samma som ovan fast hämtar loc_pair från locationslistan
-function list_fetch called 0 returned 0% blocks executed 0%
-    #####:  169:static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
+function list_fetch called 2 returned 100% blocks executed 100%
+        2:  169:static loc_pair_t *list_fetch(ioopm_list_iterator_t *it)
         -:  170:{
-    #####:  171:    elem_t current = ioopm_list_iterator_current(it);
-call    0 never executed
-    #####:  172:    loc_pair_t *tmp = current.p;
-    #####:  173:    return tmp;
+        2:  171:    elem_t current = ioopm_list_iterator_current(it);
+call    0 returned 2
+        2:  172:    loc_pair_t *tmp = current.p;
+        2:  173:    return tmp;
         -:  174:}
         -:  175:
-function remove_merchandise called 2 returned 100% blocks executed 89%
-        2:  176:void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name)
+function remove_merchandise called 5 returned 100% blocks executed 100%
+        5:  176:void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name)
         -:  177:{
         -:  178:    elem_t tmp;
-        2:  179:    s_t *item_s = lookup_htn(ht_n, name);
-call    0 returned 2
-        2:  180:    if(item_s == NULL){ // nullcheck för att undvika segfaults
-branch  0 taken 0 (fallthrough)
-branch  1 taken 2
-    #####:  181:        puts("Hittade inte itemet som söks!");
-call    0 never executed
-    #####:  182:        return;
+        5:  179:    s_t *item_s = lookup_htn(ht_n, name);
+call    0 returned 5
+        5:  180:    if(item_s == NULL){ // nullcheck för att undvika segfaults
+branch  0 taken 1 (fallthrough)
+branch  1 taken 4
+        1:  181:        puts("Hittade inte itemet som söks!");
+call    0 returned 1
+        1:  182:        return;
         -:  183:    }
         -:  184:
-        2:  185:    ioopm_list_t *l = item_s->locations;
-        2:  186:    if (!ioopm_list_is_empty(l))
-call    0 returned 2
-branch  1 taken 1 (fallthrough)
+        4:  185:    ioopm_list_t *l = item_s->locations;
+        4:  186:    if (!ioopm_list_is_empty(l))
+call    0 returned 4
+branch  1 taken 3 (fallthrough)
 branch  2 taken 1
         -:  187:    {
-        1:  188:        ioopm_list_iterator_t *it = ioopm_list_iterator_create(l);
-call    0 returned 1
-        3:  189:        while (!ioopm_list_iterator_at_end(it)) // Hämtar varje shelf från locationslistan
+        3:  188:        ioopm_list_iterator_t *it = ioopm_list_iterator_create(l);
 call    0 returned 3
-branch  1 taken 2
-branch  2 taken 1 (fallthrough)
+        9:  189:        while (!ioopm_list_iterator_at_end(it)) // Hämtar varje shelf från locationslistan
+call    0 returned 9
+branch  1 taken 6
+branch  2 taken 3 (fallthrough)
         -:  190:        {                                       // Tar sedan bort dessa shelves från htsl
-        2:  191:            elem_t to_cast = ioopm_list_iterator_current(it);
-call    0 returned 2
-        2:  192:            loc_pair_t *casted = to_cast.p;
-        2:  193:            ioopm_hash_table_remove(ht_sl, string_elem(casted->shelf), &tmp);
-call    0 returned 2
-        2:  194:            ioopm_list_iterator_advance(it);
-call    0 returned 2
+        6:  191:            elem_t to_cast = ioopm_list_iterator_current(it);
+call    0 returned 6
+        6:  192:            loc_pair_t *casted = to_cast.p;
+        6:  193:            ioopm_hash_table_remove(ht_sl, string_elem(casted->shelf), &tmp);
+call    0 returned 6
+        6:  194:            ioopm_list_iterator_advance(it);
+call    0 returned 6
         -:  195:        }
-        1:  196:        ioopm_list_iterator_destroy(it);
-call    0 returned 1
+        3:  196:        ioopm_list_iterator_destroy(it);
+call    0 returned 3
         -:  197:    }
         -:  198:
-        2:  199:    char *to_free = item_s->item->name; //Sparar undan nyckeln och namn-elemntet i S för att fria manuellt efteråt
-        2:  200:    char *name_copy = strdup(name); // Inte elegant men det funkar
-        2:  201:    destroy_entry_htn(item_s, true); //Tar bort och friar allt utrymme 
-call    0 returned 2
-        2:  202:    ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
-call    0 returned 2
-        2:  203:    free(name_copy);
-        2:  204:    free(to_free);
+        4:  199:    char *to_free = item_s->item->name; //Sparar undan nyckeln och namn-elemntet i S för att fria manuellt efteråt
+        4:  200:    char *name_copy = strdup(name); // Inte elegant men det funkar
+        4:  201:    destroy_entry_htn(item_s, true); //Tar bort och friar allt utrymme 
+call    0 returned 4
+        4:  202:    ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
+call    0 returned 4
+        4:  203:    free(name_copy);
+        4:  204:    free(to_free);
         -:  205:}
         -:  206:
-function edit_merchandise called 0 returned 0% blocks executed 0%
-    #####:  207:void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name_old, char *name_new_in, char *desc_in, size_t price)
+function edit_merchandise called 3 returned 100% blocks executed 100%
+        3:  207:void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char *name_old, char *name_new_in, char *desc_in, size_t price)
         -:  208:{
-    #####:  209:    char *name_new = strdup(name_new_in);
-    #####:  210:    char *desc = strdup(desc_in);
+        3:  209:    char *name_new = strdup(name_new_in);
+        3:  210:    char *desc = strdup(desc_in);
         -:  211:    // Hämta all tidigare info om itemet
-    #####:  212:    s_t *item_s = lookup_htn(ht_n, name_old);
-call    0 never executed
-    #####:  213:    char *to_free = item_s->item->name; //namn för att fria separat på rätt plats
+        3:  212:    s_t *item_s = lookup_htn(ht_n, name_old);
+call    0 returned 3
+        3:  213:    char *to_free = item_s->item->name; //namn för att fria separat på rätt plats
         -:  214:
         -:  215:    // skapar ny(?) info om  itemet
-    #####:  216:    merch_t *tmp = calloc(1, sizeof(merch_t));
-    #####:  217:    tmp->desc = desc;
-    #####:  218:    tmp->name = name_new;
-    #####:  219:    tmp->price = price;
-    #####:  220:    tmp->stock = item_s->item->stock;
+        3:  216:    merch_t *tmp = calloc(1, sizeof(merch_t));
+        3:  217:    tmp->desc = desc;
+        3:  218:    tmp->name = name_new;
+        3:  219:    tmp->price = price;
+        3:  220:    tmp->stock = item_s->item->stock;
         -:  221:
         -:  222:    // skapar nya itemet
-    #####:  223:    ioopm_list_t *locs = item_s->locations;
-    #####:  224:    s_t *to_insert = calloc(1, sizeof(s_t));
-    #####:  225:    to_insert->item = tmp;
-    #####:  226:    to_insert->locations = locs;
+        3:  223:    ioopm_list_t *locs = item_s->locations;
+        3:  224:    s_t *to_insert = calloc(1, sizeof(s_t));
+        3:  225:    to_insert->item = tmp;
+        3:  226:    to_insert->locations = locs;
         -:  227:
-    #####:  228:    if (!string_compare(string_elem(name_new), string_elem(name_old)))
-call    0 never executed
-branch  1 never executed (fallthrough)
-branch  2 never executed
+        3:  228:    if (!string_compare(string_elem(name_new), string_elem(name_old)))
+call    0 returned 3
+branch  1 taken 2 (fallthrough)
+branch  2 taken 1
         -:  229:    {
         -:  230:        // tar bort alla instanser av den gamla varan utifall namnet ändrats
         -:  231:        elem_t tmp;
-    #####:  232:        destroy_entry_htn(item_s, false);
-call    0 never executed
-    #####:  233:        free(item_s);
-    #####:  234:        ioopm_hash_table_remove(ht_n, string_elem(name_old), &tmp);
-call    0 never executed
-    #####:  235:        if (!ioopm_list_is_empty(locs))
-call    0 never executed
-branch  1 never executed (fallthrough)
-branch  2 never executed
+        2:  232:        destroy_entry_htn(item_s, false);
+call    0 returned 2
+        2:  233:        free(item_s);
+        2:  234:        ioopm_hash_table_remove(ht_n, string_elem(name_old), &tmp);
+call    0 returned 2
+        2:  235:        if (!ioopm_list_is_empty(locs))
+call    0 returned 2
+branch  1 taken 1 (fallthrough)
+branch  2 taken 1
         -:  236:        {
         -:  237:            // Uppdaterar varje shelf med den gamla varan med den nya utifall namnet ändrats
-    #####:  238:            ioopm_list_iterator_t *it = ioopm_list_iterator_create(locs);
-call    0 never executed
-    #####:  239:            while (!ioopm_list_iterator_at_end(it))
-call    0 never executed
-branch  1 never executed
-branch  2 never executed (fallthrough)
+        1:  238:            ioopm_list_iterator_t *it = ioopm_list_iterator_create(locs);
+call    0 returned 1
+        3:  239:            while (!ioopm_list_iterator_at_end(it))
+call    0 returned 3
+branch  1 taken 2
+branch  2 taken 1 (fallthrough)
         -:  240:            {
-    #####:  241:                elem_t to_cast = ioopm_list_iterator_current(it);
-call    0 never executed
-    #####:  242:                loc_pair_t *casted = to_cast.p;
-    #####:  243:                ioopm_hash_table_insert(ht_sl, string_elem(casted->shelf), string_elem(name_new));
-call    0 never executed
-    #####:  244:                ioopm_list_iterator_advance(it);
-call    0 never executed
+        2:  241:                elem_t to_cast = ioopm_list_iterator_current(it);
+call    0 returned 2
+        2:  242:                loc_pair_t *casted = to_cast.p;
+        2:  243:                ioopm_hash_table_insert(ht_sl, string_elem(casted->shelf), string_elem(name_new));
+call    0 returned 2
+        2:  244:                ioopm_list_iterator_advance(it);
+call    0 returned 2
         -:  245:            }
-    #####:  246:            ioopm_list_iterator_destroy(it);
-call    0 never executed
+        1:  246:            ioopm_list_iterator_destroy(it);
+call    0 returned 1
         -:  247:        }
-    #####:  248:        free(to_free);
+        2:  248:        free(to_free);
         -:  249:    }
         -:  250:    // Uppdaterar eller sätter in nya beroende på om namnet ändrats
-    #####:  251:    ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert));
-call    0 never executed
-    #####:  252:}
+        3:  251:    ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert));
+call    0 returned 3
+        3:  252:}
         -:  253:
         -:  254:
         -:  255:
-function replenish called 3 returned 100% blocks executed 100%
-        3:  256:void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf_in, size_t amount)
+function replenish called 17 returned 100% blocks executed 100%
+       17:  256:void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf_in, size_t amount)
         -:  257:{
-        3:  258:    if(!ioopm_hash_table_has_key(ht_n, string_elem(name))){
-call    0 returned 3
+       17:  258:    if(!ioopm_hash_table_has_key(ht_n, string_elem(name))){
+call    0 returned 17
 branch  1 taken 1 (fallthrough)
-branch  2 taken 2
+branch  2 taken 16
         1:  259:        return;
         -:  260:    }
-        2:  261:    char *shelf = strdup(shelf_in);
-        2:  262:    ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
-call    0 returned 2
-        2:  263:    s_t *item = lookup_htn(ht_n, name);
-call    0 returned 2
-        2:  264:    loc_pair_t *tmp = calloc(1, sizeof(loc_pair_t));
-        2:  265:    tmp->shelf = shelf;
-        2:  266:    item->item->stock += amount;
-        2:  267:    tmp->stock = amount;
-        2:  268:    item->item->available_stock += amount;
-        2:  269:    ioopm_list_append(item->locations, ptr_elem(tmp));
-call    0 returned 2
+       16:  261:    char *shelf = strdup(shelf_in);
+       16:  262:    ioopm_hash_table_insert(ht_sl, string_elem(shelf), string_elem(name));
+call    0 returned 16
+       16:  263:    s_t *item = lookup_htn(ht_n, name);
+call    0 returned 16
+       16:  264:    loc_pair_t *tmp = calloc(1, sizeof(loc_pair_t));
+       16:  265:    tmp->shelf = shelf;
+       16:  266:    item->item->stock += amount;
+       16:  267:    tmp->stock = amount;
+       16:  268:    item->item->available_stock += amount;
+       16:  269:    ioopm_list_append(item->locations, ptr_elem(tmp));
+call    0 returned 16
         -:  270:}
         -:  271:
-function show_stock called 0 returned 0% blocks executed 0%
-    #####:  272:void show_stock(ioopm_hash_table_t *ht_n, char *name)
+function show_stock called 2 returned 100% blocks executed 100%
+        2:  272:void show_stock(ioopm_hash_table_t *ht_n, char *name)
         -:  273:{
-    #####:  274:    s_t *item_s = lookup_htn(ht_n, name);
-call    0 never executed
-    #####:  275:    if (item_s->item->stock != 0)
-branch  0 never executed (fallthrough)
-branch  1 never executed
+        2:  274:    s_t *item_s = lookup_htn(ht_n, name);
+call    0 returned 2
+        2:  275:    if (item_s->item->stock != 0)
+branch  0 taken 1 (fallthrough)
+branch  1 taken 1
         -:  276:    {
-    #####:  277:        ioopm_list_iterator_t *it = ioopm_list_iterator_create(item_s->locations);
-call    0 never executed
-    #####:  278:        while (!ioopm_list_iterator_at_end(it))
-call    0 never executed
-branch  1 never executed
-branch  2 never executed (fallthrough)
+        1:  277:        ioopm_list_iterator_t *it = ioopm_list_iterator_create(item_s->locations);
+call    0 returned 1
+        3:  278:        while (!ioopm_list_iterator_at_end(it))
+call    0 returned 3
+branch  1 taken 2
+branch  2 taken 1 (fallthrough)
         -:  279:        {
-    #####:  280:            loc_pair_t *current = list_fetch(it);
-call    0 never executed
-    #####:  281:            printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
-call    0 never executed
-    #####:  282:            ioopm_list_iterator_advance(it);
-call    0 never executed
+        2:  280:            loc_pair_t *current = list_fetch(it);
+call    0 returned 2
+        2:  281:            printf("Hylla: %s innehåller %ld %s \n", current->shelf, current->stock, name);
+call    0 returned 2
+        2:  282:            ioopm_list_iterator_advance(it);
+call    0 returned 2
         -:  283:        }
-    #####:  284:        ioopm_list_iterator_destroy(it);
-call    0 never executed
+        1:  284:        ioopm_list_iterator_destroy(it);
+call    0 returned 1
         -:  285:    }
-    #####:  286:}
+        2:  286:}

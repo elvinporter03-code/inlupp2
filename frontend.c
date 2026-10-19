@@ -3,6 +3,7 @@
 #include "hash_table_iterator.h"
 #include "list_iterator.h"
 #include "utils.h"
+#include "carts.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -50,6 +51,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
     size_t price;
     //size_t cart_id;
     char **results;
+    cart_list_t *cart_list = cart_list_create();
     bool running = true;
     while (running)
     {
@@ -111,18 +113,19 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             break;
 
         case 'C':
-            //create_cart();
+            ioopm_create_cart(cart_list);
             break;
 
         case 'R':
-            //remove_cart();
+            size_t index = ask_question_int("Vilken kundvagn vill du ta bort? \n");
+            ioopm_remove_cart(cart_list, index, ht_n);
             break;
 
         case '+':
-            //cart_id = ask_question_int("Vilken Cart vill du lägga till items i? \n");
-            //todo funktion för att hitta cart
+            size_t index = ask_question_int("Vilken kundvagn vill du lägga till varor i? \n");
             name = ask_question_string("Vilket item vill du lägga till? \n");
-            //add_to_cart(cart, name, cart_id);
+            size_t amount = ask_question_int("Hur många varor vill du lägga till? \n");
+            ioopm_add_to_cart(cart_list, index, name, amount, ht_n);
             free(name);
             break;
 
