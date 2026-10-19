@@ -44,9 +44,9 @@ void test_create_destroy() {
     CU_ASSERT_TRUE(ioopm_list_is_empty(cart_list->carts));
 
     // ta bort en tom cart
-    cart_t *cart1 = ioopm_create_cart(cart_list);
+    ioopm_create_cart(cart_list);
     CU_ASSERT_EQUAL(ioopm_list_size(cart_list->carts), 1);
-    //ioopm_remove_cart(cart_list, 1, ht_n);
+    ioopm_remove_cart(cart_list, 1, ht_n);
     CU_ASSERT_TRUE(ioopm_list_is_empty(cart_list->carts));
     
     // ta bort en cart som inte finns
@@ -117,7 +117,7 @@ void test_add() {
     ioopm_add_to_cart(cart, name3, 5, ht_n);
     CU_ASSERT_EQUAL(ioopm_calc_costs(cart, ht_n), cost3);
 
-    //ioopm_remove_cart(cart_list, 1, ht_n);
+    ioopm_remove_cart(cart_list, 1, ht_n);
     free_cart_list(cart_list);
 
     destructor(ht_n, ht_sl);
@@ -181,9 +181,9 @@ void test_remove() {
 
 
 
-    //int total_cost = ioopm_checkout(cart_list, 1, ht_n);
-    //CU_ASSERT_EQUAL(cost6, total_cost);
-    //printf("%i", total_cost);
+    int total_cost = ioopm_checkout(cart_list, 1, ht_n);
+    CU_ASSERT_EQUAL(cost6, total_cost);
+    printf("%i", total_cost);
 
     free_cart_list(cart_list);
     destructor(ht_n, ht_sl);
@@ -203,7 +203,7 @@ void test_checkout() {
 
     // lägg in två, fyll name2 i första och lägg in name1 i den också. låt den andra vara tom.
     cart_t *cart1 = ioopm_create_cart(cart_list);
-    cart_t *cart2 = ioopm_create_cart(cart_list);
+    ioopm_create_cart(cart_list);
 
     char *name = "Bok";
     char *name2 = "Saft";

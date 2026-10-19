@@ -20,12 +20,6 @@ static cart_t *cart_create() {
     return cart;
 }
 
-static loc_pair_t *list_pair_create() {
-    
-    loc_pair_t *list_pair = calloc(1, sizeof(loc_pair_t));
-    return list_pair;
-}
-
 static cart_merch_t *cart_merch_create() {
 
     cart_merch_t *cart_merch = calloc(1, sizeof(cart_merch_t));
