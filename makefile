@@ -37,7 +37,6 @@ coverage: clean
 
 	@echo "--- gcov: carts täcks av carts_tests ---"
 	@gcov -b -c carts_tests-carts.gcda
-
 	@rm -f *.gcda *.gcno *-*.gcda *-*.gcno
 	@echo "Klart! Öppna backend.c.gcov och carts.c.gcov."
 
