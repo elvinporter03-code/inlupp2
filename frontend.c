@@ -123,7 +123,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, cart_list_t 
             if(confirmation()){
                 ioopm_remove_cart(cart_list, index, ht_n);
             }
-            printf("The cart with id %zu has now been removed \n");
+            printf("The cart with id %zu has now been removed \n", index);
             break;
 
         case '+':

@@ -106,37 +106,37 @@ void ioopm_list_insert(ioopm_list_t *list, size_t index, elem_t value)
     (list->size)++;
 }
 
-elem_t ioopm_list_remove(ioopm_list_t *list, size_t index) 
+elem_t ioopm_list_remove(ioopm_list_t *list, size_t index)
 {
-    if(list->size == 0){
+    if (list->size == 0)
+    {
         return string_elem("Empty list!");
     }
-    //Hittar föregående och nuvarande nod
-    ioopm_list_node_t *previous = find_previous(list->first, index);
+
     ioopm_list_node_t *current;
 
-    if (previous->tail == NULL)
-    {
-        current = previous;
-    }
-    else 
-    {
-        current = previous->tail;
-    }
-    
-    elem_t removed = current->head;
-    //Länkar om listan för att frigöra nuvarande nod
-    previous->tail = current->tail;
-    //Edge cases
     if (index == 0)
     {
-        list->first = list->first->tail;
+        current = list->first;
+        list->first = current->tail;
+        if (list->first == NULL)
+        {
+            list->last = NULL;
+        }
     }
-    else if (index == list->size - 1)
+    else
     {
-        list->last = previous;
+        ioopm_list_node_t *previous = find_previous(list->first, index);
+        current = previous->tail;
+        previous->tail = current->tail;
+        if (current == list->last)
+        {
+            list->last = previous;
+        }
     }
-    free(current); //Frigör minnet
+
+    elem_t removed = current->head;
+    free(current);
     (list->size)--;
     return removed;
 }
