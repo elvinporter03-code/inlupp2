@@ -20,10 +20,11 @@ carts_tests: carts_tests.c carts.c $(SHARED) carts.h $(HDRS)
 	$(CC) $(CFLAGS) carts_tests.c carts.c $(SHARED) -o carts_tests -lcunit
 
 clean:
-	rm -f app tests
+	rm -f app tests carts_tests
 
 run: app
 	./app < test.txt
 
 test: tests
-	./tests
+	./tests 
+	./carts_tests
