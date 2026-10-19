@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-//Hej
+//Inte hej längre
 
 //Hjälpfunktion som friar upp alla pekare tillhörande locationslistan
 static void destroy_loc_pairs(ioopm_list_t *list)
@@ -201,6 +201,7 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
     char *name_copy = strdup(name); // Inte elegant men det funkar
     destroy_entry_htn(item_s, true); //Tar bort och friar allt utrymme 
     ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
+    free(name_copy);
     free(to_free);
 }
 
