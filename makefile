@@ -8,7 +8,7 @@ COVFLAGS = -Wall -Wextra -g --coverage
 SHARED = backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
 
 # Alla .h-filer (för beroenden)
-HDRS = backend.h common.h linked_list.h list_iterator.h hash_table.h hash_table_iterator.h utils.h
+HDRS = backend.h common.h linked_list.h list_iterator.h hash_table.h hash_table_iterator.h utils.h carts.h
 
 # Programmet
 app: frontend.c $(SHARED) $(HDRS)
@@ -19,28 +19,35 @@ tests: backend_tests.c $(SHARED) $(HDRS)
 	$(CC) $(CFLAGS) backend_tests.c $(SHARED) -o tests -lcunit
 
 # Carts-tester
-carts_tests: carts_tests.c carts.c $(SHARED) carts.h $(HDRS)
+carts_tests: carts_tests.c carts.c $(SHARED) $(HDRS)
 	$(CC) $(CFLAGS) carts_tests.c carts.c $(SHARED) -o carts_tests -lcunit
 
-# Coverage: kompilera om allt med --coverage, kör testerna, generera rapport
+# Coverage
 coverage: clean
+	@echo "--- Kompilerar med coverage-flaggor ---"
 	$(CC) $(COVFLAGS) backend_tests.c $(SHARED) -o tests -lcunit
-	./tests
-	gcov -b -c backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
-	@echo ""
-	@echo "=================================================="
-	@echo "Coverage-rapport genererad. Filerna *.gcov finns i mappen."
-	@echo "Öppna t.ex. backend.c.gcov för att se täckningen."
-	@echo "=================================================="
+	$(CC) $(COVFLAGS) carts_tests.c carts.c $(SHARED) -o carts_tests -lcunit
 
-# Ta bort alla binärer OCH gcov-filer
+	@echo "--- Kör testerna ---"
+	./tests
+	./carts_tests
+
+	@echo "--- gcov: backend täcks av backend_tests ---"
+	@gcov -b -c tests-backend.gcda
+
+	@echo "--- gcov: carts täcks av carts_tests ---"
+	@gcov -b -c carts_tests-carts.gcda
+
+	@rm -f *.gcda *.gcno *-*.gcda *-*.gcno
+	@echo "Klart! Öppna backend.c.gcov och carts.c.gcov."
+
 clean:
-	rm -f app tests carts_tests
-	rm -f *.gcda *.gcno *.gcov
+	rm -f app tests carts_tests test_carts
+	rm -f *.gcda *.gcno *.gcov *-*.gcda *-*.gcno
 
 run: app
 	./app < test.txt
 
-test: tests
-	./tests 
+test: tests carts_tests
+	./tests
 	./carts_tests
