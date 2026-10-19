@@ -114,7 +114,8 @@ elem_t ioopm_list_remove(ioopm_list_t *list, size_t index)
     //Hittar föregående och nuvarande nod
     ioopm_list_node_t *previous = find_previous(list->first, index);
     ioopm_list_node_t *current;
-    if (previous->tail == NULL)
+
+    /*if (previous->tail == NULL)
     {
         current = previous;
     }
@@ -122,7 +123,8 @@ elem_t ioopm_list_remove(ioopm_list_t *list, size_t index)
     {
         current = previous->tail;
     }
-    
+    */
+    current = previous->tail;
     elem_t removed = current->head;
     //Länkar om listan för att frigöra nuvarande nod
     previous->tail = current->tail;

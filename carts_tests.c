@@ -437,7 +437,7 @@ void test_checkout()
 {
     ioopm_hash_table_t *ht_n = init();
     ioopm_hash_table_t *ht_sl =
-        ioopm_hash_table_create(string_knr_hash, string_compare);
+    ioopm_hash_table_create(string_knr_hash, string_compare);
     cart_list_t *cart_list = cart_list_create();
 
     // Checkout av en kundvagn som inte finns
