@@ -170,7 +170,6 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, cart_list_t 
         }
         free(ans);
     }
-    free_cart_list(cart_list);
 
 }
 
@@ -182,6 +181,7 @@ int main()
 
     main_loop(ht_sl, ht_n, cart_list);
 
+    free_cart_list(cart_list);
     destructor(ht_n, ht_sl); // shoppingcarts
     return 0;
 }

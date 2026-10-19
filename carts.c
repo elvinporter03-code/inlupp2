@@ -286,6 +286,7 @@ int ioopm_calc_costs(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t 
         // plocka ut produkten och kolla så att den finns
         if (!ioopm_hash_table_lookup(ht_n, string_elem(cart_merch.cmerch->name), &S)) {
             printf("%s does not exist in stock", cart_merch.cmerch->name);
+            ioopm_hash_table_iterator_destroy(it);
             return -1;
         }
 
