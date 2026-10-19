@@ -1,0 +1,25 @@
+name: C CI with CUnit
+
+on:
+  pull_request:
+    branches: [ "main" ] 
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest 
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install CUnit
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libcunit1 libcunit1-doc libcunit1-dev
+
+    - name: Build project
+      run: make carts_tests
+           make backend_tests
+
+
+    - name: Run tests
+      run: make test
