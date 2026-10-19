@@ -24,4 +24,5 @@ run: app
 test: tests
 	./tests
 
-// $ gcc -std=gnu11 -Wall -Wextra -g     carts_tests.c carts.c backend.c hash_table.c linked_list.c     hash_table_iterator.c list_iterator.c utils.c     -o carts_tests -lcunit
+cart_tests:
+	gcc -std=gnu11 -Wall -Wextra -g     carts_tests.c carts.c backend.c hash_table.c linked_list.c     hash_table_iterator.c list_iterator.c utils.c     -o carts_tests -lcunit
