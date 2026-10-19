@@ -17,10 +17,9 @@ jobs:
         sudo apt-get install -y libcunit1 libcunit1-doc libcunit1-dev
 
     - name: Build project
-      run: |
-        gcc -Wall -Wextra -g -fsanitize=address,undefined backend_tests.c backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c -o backend_tests -lcunit
-        gcc -std=gnu11 -Wall -Wextra -g carts_tests.c carts.c backend.c hash_table.c linked_list.c hash_table_iterator.c list_iterator.c utils.c -o carts_tests -lcunit
+      run: make carts_tests
+           make backend_tests
+
 
     - name: Run tests
-      run: ./carts_tests
-           ./backend_tests
+      run: make test

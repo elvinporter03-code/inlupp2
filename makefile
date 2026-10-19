@@ -1,5 +1,8 @@
 CC     = gcc
-CFLAGS =  -Wall -Wextra -g -fsanitize=address,undefined
+CFLAGS = -Wall -Wextra -g -fsanitize=address,undefined
+
+# Flaggor för coverage (ersätter sanitizers eftersom de inte fungerar ihop med gcov)
+COVFLAGS = -Wall -Wextra -g --coverage
 
 # Alla .c-filer utom frontend.c och backend_tests.c (båda har main)
 SHARED = backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
@@ -19,12 +22,24 @@ tests: backend_tests.c $(SHARED) $(HDRS)
 carts_tests: carts_tests.c carts.c $(SHARED) carts.h $(HDRS)
 	$(CC) $(CFLAGS) carts_tests.c carts.c $(SHARED) -o carts_tests -lcunit
 
+# Coverage: kompilera om allt med --coverage, kör testerna, generera rapport
+coverage: clean
+	$(CC) $(COVFLAGS) backend_tests.c $(SHARED) -o tests -lcunit
+	./tests
+	gcov -b -c backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
+	@echo ""
+	@echo "=================================================="
+	@echo "Coverage-rapport genererad. Filerna *.gcov finns i mappen."
+	@echo "Öppna t.ex. backend.c.gcov för att se täckningen."
+	@echo "=================================================="
+
+# Ta bort alla binärer OCH gcov-filer
 clean:
-	rm -f app tests
+	rm -f app tests carts_tests
+	rm -f *.gcda *.gcno *.gcov
 
 run: app
 	./app < test.txt
 
 test: tests
 	./tests
-
