@@ -1,0 +1,537 @@
+        -:    0:Source:carts.c
+        -:    0:Graph:carts_tests-carts.gcno
+        -:    0:Data:carts_tests-carts.gcda
+        -:    0:Runs:1
+        -:    1:#include "common.h"
+        -:    2:#include "hash_table_iterator.h"
+        -:    3:#include "list_iterator.h"
+        -:    4:#include "carts.h"
+        -:    5:#include "backend.h"
+        -:    6:
+        -:    7:#include <stdio.h>
+        -:    8:#include <string.h>
+        -:    9:#include <stdlib.h>
+        -:   10:#include <stdbool.h>
+        -:   11:
+        -:   12:
+        -:   13:
+        -:   14:// STATISKA:
+        -:   15:
+function cart_create called 5 returned 100% blocks executed 100%
+        5:   16:static cart_t *cart_create() {
+        -:   17:
+        5:   18:    cart_t *cart = calloc(1, sizeof(cart_t));
+        5:   19:    cart->merchandises = ioopm_hash_table_create(string_knr_hash, string_compare);
+call    0 returned 5
+        5:   20:    return cart;
+        -:   21:}
+        -:   22:
+function cart_merch_create called 5 returned 100% blocks executed 100%
+        5:   23:static cart_merch_t *cart_merch_create() {
+        -:   24:
+        5:   25:    cart_merch_t *cart_merch = calloc(1, sizeof(cart_merch_t));
+        5:   26:    return cart_merch;
+        -:   27:}
+        -:   28:
+function free_cart_merch called 5 returned 100% blocks executed 100%
+        5:   29:static void free_cart_merch(cart_t *cart) {
+        -:   30:
+        5:   31:    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandises);
+call    0 returned 5
+        -:   32:    elem_t c_value;
+        -:   33:
+        9:   34:    while (!ioopm_hash_table_iterator_at_end(it)) {
+call    0 returned 9
+branch  1 taken 4
+branch  2 taken 5 (fallthrough)
+        4:   35:        c_value = ioopm_hash_table_iterator_current_value(it);
+call    0 returned 4
+        4:   36:        ioopm_hash_table_iterator_advance(it);
+call    0 returned 4
+        4:   37:        free(c_value.cmerch->name);
+        4:   38:        free(c_value.cmerch);
+        -:   39:    }
+        -:   40:
+        5:   41:    ioopm_hash_table_iterator_destroy(it);
+call    0 returned 5
+        5:   42:}
+        -:   43:
+function free_cart called 5 returned 100% blocks executed 100%
+        5:   44:static void free_cart(cart_t *cart) {
+        -:   45:
+        5:   46:    free_cart_merch(cart);
+call    0 returned 5
+        5:   47:    ioopm_hash_table_destroy(cart->merchandises);
+call    0 returned 5
+        5:   48:    free(cart);
+        5:   49:}
+        -:   50:
+function find_cart_index called 37 returned 100% blocks executed 100%
+       37:   51:static int find_cart_index(cart_list_t *cart_list, size_t cart_id) {
+        -:   52:
+       37:   53:    ioopm_list_iterator_t *cart_it = ioopm_list_iterator_create(cart_list->carts);
+call    0 returned 37
+       37:   54:    int index = 0;
+        -:   55:
+       39:   56:    while (!ioopm_list_iterator_at_end(cart_it)) {
+call    0 returned 39
+branch  1 taken 38
+branch  2 taken 1 (fallthrough)
+        -:   57:
+       38:   58:        if (ioopm_list_iterator_current(cart_it).crt->id == cart_id) {
+call    0 returned 38
+branch  1 taken 36 (fallthrough)
+branch  2 taken 2
+       36:   59:            ioopm_list_iterator_destroy(cart_it);
+call    0 returned 36
+       36:   60:            return index;
+        -:   61:        }
+        -:   62:
+        2:   63:        ioopm_list_iterator_advance(cart_it);
+call    0 returned 2
+        2:   64:        index++;
+        -:   65:    }
+        -:   66:
+        -:   67:    // varukorgen finns inte
+        1:   68:    ioopm_list_iterator_destroy(cart_it);
+call    0 returned 1
+        1:   69:    return -1;
+        -:   70:}
+        -:   71:
+        -:   72:
+        -:   73:// PUBLIKA:
+        -:   74:
+function cart_list_create called 3 returned 100% blocks executed 100%
+        3:   75:cart_list_t *cart_list_create() {
+        -:   76:
+        3:   77:    cart_list_t *cart_list = calloc(1, sizeof(cart_list_t));
+        3:   78:    cart_list->carts = ioopm_list_create();
+call    0 returned 3
+        3:   79:    return cart_list;
+        -:   80:}
+        -:   81:
+function free_cart_list called 3 returned 100% blocks executed 100%
+        3:   82:void free_cart_list(cart_list_t *cart_list) {
+        -:   83:
+        3:   84:    ioopm_list_iterator_t *it = ioopm_list_iterator_create(cart_list->carts);
+call    0 returned 3
+        -:   85:    elem_t current;
+        -:   86:
+        -:   87:    // frigör alla carts och deras innehåll
+        4:   88:    while (!ioopm_list_iterator_at_end(it)) {
+call    0 returned 4
+branch  1 taken 1
+branch  2 taken 3 (fallthrough)
+        1:   89:        current = ioopm_list_iterator_current(it);
+call    0 returned 1
+        1:   90:        free_cart(current.crt);
+call    0 returned 1
+        1:   91:        ioopm_list_iterator_advance(it);
+call    0 returned 1
+        -:   92:    }
+        -:   93:
+        -:   94:    // frigör listan i cart_list samt strukten cart_list
+        3:   95:    ioopm_list_iterator_destroy(it);
+call    0 returned 3
+        3:   96:    ioopm_list_destroy(cart_list->carts);
+call    0 returned 3
+        3:   97:    free(cart_list);
+        3:   98:}
+        -:   99:
+function ioopm_create_cart called 5 returned 100% blocks executed 100%
+        5:  100:cart_t *ioopm_create_cart(cart_list_t *cart_list) {
+        -:  101:
+        5:  102:    cart_t *cart = cart_create();
+call    0 returned 5
+        5:  103:    cart_list->id_counter++;
+        5:  104:    cart->id = cart_list->id_counter;
+        -:  105:
+        5:  106:    ioopm_list_append(cart_list->carts, crt_elem(cart));
+call    0 returned 5
+        -:  107:
+        5:  108:    printf("Your cart id is: %zu\n", cart_list->id_counter);
+call    0 returned 5
+        5:  109:    return cart;
+        -:  110:}
+        -:  111:
+function ioopm_remove_cart called 4 returned 100% blocks executed 100%
+        4:  112:void ioopm_remove_cart(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n) {
+        -:  113:
+        -:  114:    // plocka ut varukorgens index i listan av korgar
+        4:  115:    int index = find_cart_index(cart_list, cart_id);
+call    0 returned 4
+        -:  116:
+        -:  117:    // returnerar ifall kundvagnen inte finns i listan
+        4:  118:    if (index < 0) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 3
+        1:  119:        printf("cart %zu does not exist\n", cart_id);
+call    0 returned 1
+        1:  120:        return;
+        -:  121:    }
+        -:  122:
+        3:  123:    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
+call    0 returned 3
+        -:  124:
+        -:  125:    // lämna tillbaka alla varor till availible stock
+        3:  126:    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandises);
+call    0 returned 3
+        -:  127:    cart_merch_t *merch;
+        -:  128:    elem_t S;
+        -:  129:
+        6:  130:    while(!ioopm_hash_table_iterator_at_end(it)) {
+call    0 returned 6
+branch  1 taken 3
+branch  2 taken 3 (fallthrough)
+        -:  131:
+        3:  132:        merch = (cart_merch_t*)ioopm_hash_table_iterator_current_value(it).cmerch;
+call    0 returned 3
+        -:  133:
+        3:  134:        if (ioopm_hash_table_lookup(ht_n, string_elem(merch->name), &S)) {
+call    0 returned 3
+branch  1 taken 3 (fallthrough)
+branch  2 taken 0
+        3:  135:            S.st->item->available_stock += merch->amount;
+        -:  136:        }
+        -:  137:
+        3:  138:        ioopm_hash_table_iterator_advance(it);
+call    0 returned 3
+        -:  139:    }
+        -:  140:
+        3:  141:    ioopm_hash_table_iterator_destroy(it);
+call    0 returned 3
+        -:  142:
+        -:  143:    // ta bort varukorgen från listan av korgar
+        3:  144:    ioopm_list_remove(cart_list->carts, (size_t) index);
+call    0 returned 3
+        -:  145:
+        -:  146:    // frigör varukorgen
+        3:  147:    free_cart(cart);
+call    0 returned 3
+        -:  148:}
+        -:  149:
+function ioopm_add_to_cart called 9 returned 100% blocks executed 92%
+        9:  150:void ioopm_add_to_cart(cart_list_t *cart_list, size_t cart_id, char *name, size_t amount, ioopm_hash_table_t *ht_n) {
+        -:  151:
+        -:  152:    // plocka ut varukorgens index i listan av korgar
+        9:  153:    int index = find_cart_index(cart_list, cart_id);
+call    0 returned 9
+        -:  154:
+        -:  155:    // returnerar ifall kundvagnen inte finns i listan
+        9:  156:    if (index < 0) {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 9
+    #####:  157:        printf("cart %zu does not exist\n", cart_id);
+call    0 never executed
+       3*:  158:        return;
+        -:  159:    }
+        -:  160:
+        9:  161:    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
+call    0 returned 9
+        -:  162:
+        -:  163:    // kolla så att amount är större än 0
+        9:  164:    if (amount == 0) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 8
+        1:  165:        printf("You must add at least 1 item to your cart\n");
+call    0 returned 1
+        1:  166:        return;
+        -:  167:    }
+        -:  168:
+        -:  169:    // kolla i merchandise registret så att varan finns
+        -:  170:    elem_t S;
+        8:  171:    bool exists_in_ht_n = ioopm_hash_table_lookup(ht_n, string_elem(name), &S);
+call    0 returned 8
+        8:  172:    if (!exists_in_ht_n) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 7
+        1:  173:        printf("%s does not exist\n", name);
+call    0 returned 1
+        1:  174:        return;
+        -:  175:    }
+        -:  176:    
+        -:  177:    // kolla så att det finns tillräckligt många availible stock
+        7:  178:    size_t av_stock = S.st->item->available_stock;
+        7:  179:    if (av_stock < amount) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 6
+        1:  180:        printf("Sorry, we do not have %zu items in stock\n", amount);
+call    0 returned 1
+        1:  181:        return;
+        -:  182:    }
+        -:  183:
+        -:  184:    // minska availible stock
+        6:  185:    S.st->item->available_stock -= amount;
+        -:  186:
+        -:  187:
+        -:  188:    // kolla om produkten redan finns i kundvagnen
+        -:  189:    elem_t cart_merch_old;
+        6:  190:    bool exists_in_cart = ioopm_hash_table_lookup(cart->merchandises, string_elem(name), &cart_merch_old);
+call    0 returned 6
+        -:  191:
+        -:  192:    // om det gör det öka antalet
+        6:  193:    if (exists_in_cart) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 5
+        1:  194:        cart_merch_old.cmerch->amount += amount;
+        -:  195:    }
+        -:  196:
+        -:  197:    // om inte lägg in en ny produkt
+        -:  198:    else {
+        5:  199:        cart_merch_t *cart_merch_new = cart_merch_create();
+call    0 returned 5
+        5:  200:        cart_merch_new->name = strdup(name);
+        5:  201:        cart_merch_new->amount = amount;
+        5:  202:        ioopm_hash_table_insert(cart->merchandises, string_elem(cart_merch_new->name), cmerch_elem(cart_merch_new));
+call    0 returned 5
+        -:  203:    }
+        -:  204:}
+        -:  205:
+function ioopm_remove_from_cart called 7 returned 100% blocks executed 85%
+        7:  206:void ioopm_remove_from_cart(cart_list_t *cart_list, size_t cart_id, char *name, size_t amount, ioopm_hash_table_t *ht_n) {
+        -:  207:
+        -:  208:    // plocka ut varukorgens index i listan av korgar
+        7:  209:    int index = find_cart_index(cart_list, cart_id);
+call    0 returned 7
+        -:  210:
+        -:  211:    // returnerar ifall kundvagnen inte finns i listan
+        7:  212:    if (index < 0) {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 7
+    #####:  213:        printf("cart %zu does not exist\n", cart_id);
+call    0 never executed
+       4*:  214:        return;
+        -:  215:    }
+        -:  216:
+        7:  217:    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
+call    0 returned 7
+        -:  218:
+        -:  219:    // kolla så att antalet inte är noll
+        7:  220:    if (amount == 0) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 6
+        1:  221:        printf("You must remove at least 1 item from your cart\n");
+call    0 returned 1
+        1:  222:        return;
+        -:  223:    }
+        -:  224:
+        -:  225:    // kolla så att varan finns i varukorgen
+        -:  226:    elem_t cart_merch;
+        6:  227:    bool exists = ioopm_hash_table_lookup(cart->merchandises, string_elem(name), &cart_merch);
+call    0 returned 6
+        6:  228:    if (!exists) {
+branch  0 taken 2 (fallthrough)
+branch  1 taken 4
+        2:  229:        printf("the item %s does not exist in your cart\n", name);
+call    0 returned 2
+        2:  230:        return;
+        -:  231:    }
+        -:  232:
+        -:  233:    // kolla så att varan finns i det merchandise registret
+        -:  234:    elem_t S;
+        4:  235:    exists = ioopm_hash_table_lookup(ht_n, string_elem(name), &S);
+call    0 returned 4
+        4:  236:    if (!exists) {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 4
+    #####:  237:        printf("%s does not exist\n", name);
+call    0 never executed
+    #####:  238:        return;
+        -:  239:    }
+        -:  240:
+        -:  241:    // kolla så att vi inte försöker ta bort fler än vad som finns i varukorgen
+        4:  242:    if (cart_merch.cmerch->amount < amount) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 3
+        1:  243:        printf("the cart does not contain %zu of %s\n", amount, name);
+call    0 returned 1
+        1:  244:        return;
+        -:  245:    }
+        -:  246:
+        -:  247:    // kolla om vi tar bort alla och ta bort varan från varukorgen
+        3:  248:    if (cart_merch.cmerch->amount == amount) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 2
+        -:  249:        elem_t result;
+        1:  250:        ioopm_hash_table_remove(cart->merchandises, string_elem(name), &result);
+call    0 returned 1
+        1:  251:        free(result.cmerch->name);
+        1:  252:        free(result.cmerch);
+        -:  253:    }
+        -:  254:
+        -:  255:    // om vi tar bort färre än vad som finns minskar vi antalet i varukorgen
+        -:  256:    else {
+        2:  257:        cart_merch.cmerch->amount -= amount;
+        -:  258:    }
+        -:  259:
+        -:  260:    // lägg tillbaka antalet i available stock inuti lagret
+        3:  261:    S.st->item->available_stock += amount;
+        -:  262:
+        -:  263:}
+        -:  264:
+function ioopm_calc_costs called 16 returned 100% blocks executed 79%
+       16:  265:int ioopm_calc_costs(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n) {
+        -:  266:
+        -:  267:    // plocka ut varukorgens index i listan av korgar
+       16:  268:    int index = find_cart_index(cart_list, cart_id);
+call    0 returned 16
+        -:  269:
+        -:  270:    // returnerar ifall kundvagnen inte finns i listan
+       16:  271:    if (index < 0) {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 16
+    #####:  272:        printf("cart %zu does not exist\n", cart_id);
+call    0 never executed
+    #####:  273:        return -1;
+        -:  274:    }
+        -:  275:
+       16:  276:    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
+call    0 returned 16
+        -:  277:
+       16:  278:    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(cart->merchandises);
+call    0 returned 16
+       16:  279:    int total_cost = 0;
+        -:  280:    elem_t cart_merch;
+        -:  281:    elem_t S;
+        -:  282:
+       39:  283:    while (!ioopm_hash_table_iterator_at_end(it)) {
+call    0 returned 39
+branch  1 taken 23
+branch  2 taken 16 (fallthrough)
+       23:  284:        cart_merch = ioopm_hash_table_iterator_current_value(it);
+call    0 returned 23
+        -:  285:
+        -:  286:        // plocka ut produkten och kolla så att den finns
+       23:  287:        if (!ioopm_hash_table_lookup(ht_n, string_elem(cart_merch.cmerch->name), &S)) {
+call    0 returned 23
+branch  1 taken 0 (fallthrough)
+branch  2 taken 23
+    #####:  288:            printf("%s does not exist in stock", cart_merch.cmerch->name);
+call    0 never executed
+    #####:  289:            return -1;
+        -:  290:        }
+        -:  291:
+        -:  292:        // multiplicera antalet av produkten med dess pris
+       23:  293:        total_cost += cart_merch.cmerch->amount * S.st->item->price;
+       23:  294:        ioopm_hash_table_iterator_advance(it);
+call    0 returned 23
+        -:  295:    }
+        -:  296:
+       16:  297:    ioopm_hash_table_iterator_destroy(it);
+call    0 returned 16
+       16:  298:    return total_cost;
+        -:  299:}
+        -:  300:
+function ioopm_checkout called 1 returned 100% blocks executed 81%
+        1:  301:int ioopm_checkout(cart_list_t *cart_list, size_t cart_id, ioopm_hash_table_t *ht_n) {
+        -:  302:    
+        -:  303:    // plocka ut varukorgens index i listan av korgar
+        1:  304:    int index = find_cart_index(cart_list, cart_id);
+call    0 returned 1
+        -:  305:
+        -:  306:    // om varukorgen inte finns med i listan av korgar
+        1:  307:    if (index < 0) {
+branch  0 taken 0 (fallthrough)
+branch  1 taken 1
+    #####:  308:        printf("cart %zu does not exist\n", cart_id);
+call    0 never executed
+    #####:  309:        return -2;
+        -:  310:    }
+        -:  311:
+        1:  312:    cart_t *cart = ioopm_list_get(cart_list->carts, (size_t) index).crt;
+call    0 returned 1
+        1:  313:    ioopm_hash_table_iterator_t *merch_it = ioopm_hash_table_iterator_create(cart->merchandises);
+call    0 returned 1
+        -:  314:    cart_merch_t *merch;
+        -:  315:    elem_t S;
+        -:  316:
+        -:  317:    // för varje produkt i varukorgen
+        2:  318:    while(!ioopm_hash_table_iterator_at_end(merch_it)) {
+call    0 returned 2
+branch  1 taken 1
+branch  2 taken 1 (fallthrough)
+        -:  319:
+        -:  320:        // ta bort mängden av produkten från lagret
+        1:  321:        merch = (cart_merch_t*)ioopm_hash_table_iterator_current_value(merch_it).cmerch;
+call    0 returned 1
+        -:  322:
+        1:  323:        ioopm_hash_table_lookup(ht_n, string_elem(merch->name), &S);
+call    0 returned 1
+        -:  324:
+        -:  325:        // ta bort mängden av produkten från hyllorna, från första till sista
+        1:  326:        size_t amount_temp = merch->amount;
+        1:  327:        ioopm_list_iterator_t *shelf_it = ioopm_list_iterator_create(S.st->locations);
+call    0 returned 1
+        -:  328:        loc_pair_t *current;
+        -:  329:
+        2:  330:        while (amount_temp > 0) {
+branch  0 taken 1
+branch  1 taken 1 (fallthrough)
+        -:  331:
+        -:  332:            // ifall det inte finns tillräckligt många varor på hyllorna
+        1:  333:            if (ioopm_list_iterator_at_end(shelf_it)) {
+call    0 returned 1
+branch  1 taken 0 (fallthrough)
+branch  2 taken 1
+    #####:  334:                printf("Not enought stock in locations, does not match availible stock\n");
+call    0 never executed
+    #####:  335:                ioopm_list_iterator_destroy(shelf_it);
+call    0 never executed
+    #####:  336:                S.st->item->stock -= merch->amount - amount_temp;
+    #####:  337:                ioopm_hash_table_iterator_destroy(merch_it);
+call    0 never executed
+    #####:  338:                return -2;
+        -:  339:            }
+        -:  340:
+        1:  341:            current = ioopm_list_iterator_current(shelf_it).p;
+call    0 returned 1
+        -:  342:
+        -:  343:            // om det finns varor på hyllan
+        1:  344:            if (current->stock > 0) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 0
+        -:  345:
+        -:  346:                // om det finns fler varor på hyllan än mängden vi tar bort
+        1:  347:                if (current->stock > amount_temp) {
+branch  0 taken 1 (fallthrough)
+branch  1 taken 0
+        1:  348:                    current->stock -= amount_temp;
+        1:  349:                    amount_temp = 0;
+        -:  350:                }
+        -:  351:
+        -:  352:                // om det finns lika många eller färre
+        -:  353:                else {
+        -:  354:
+    #####:  355:                    amount_temp -= current->stock;
+    #####:  356:                    current->stock = 0;
+        -:  357:                }   
+        -:  358:            }
+        -:  359:
+        1:  360:            ioopm_list_iterator_advance(shelf_it);
+call    0 returned 1
+        -:  361:        }
+        -:  362:
+        1:  363:        ioopm_list_iterator_destroy(shelf_it);
+call    0 returned 1
+        1:  364:        ioopm_hash_table_iterator_advance(merch_it);
+call    0 returned 1
+        -:  365:
+        1:  366:        S.st->item->stock -= merch->amount - amount_temp;
+        -:  367:    }
+        -:  368:
+        1:  369:    ioopm_hash_table_iterator_destroy(merch_it);
+call    0 returned 1
+        -:  370:
+        1:  371:    int total_cost = ioopm_calc_costs(cart_list, cart_id, ht_n);
+call    0 returned 1
+        -:  372:
+        -:  373:    // ta bort varukorgen från listan av korgar:
+        1:  374:    ioopm_list_remove(cart_list->carts, (size_t) index);
+call    0 returned 1
+        -:  375:
+        -:  376:    // frigör varukorgen:
+        1:  377:    free_cart(cart);
+call    0 returned 1
+        -:  378:
+        1:  379:    return total_cost;
+        -:  380:}

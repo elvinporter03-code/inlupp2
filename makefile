@@ -5,7 +5,7 @@ CFLAGS = -Wall -Wextra -g -fsanitize=address,undefined
 COVFLAGS = -Wall -Wextra -g --coverage
 
 # Alla .c-filer utom frontend.c och backend_tests.c (båda har main)
-SHARED = backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c
+SHARED = backend.c linked_list.c list_iterator.c hash_table.c hash_table_iterator.c utils.c carts.c
 
 # Alla .h-filer (för beroenden)
 HDRS = backend.h common.h linked_list.h list_iterator.h hash_table.h hash_table_iterator.h utils.h carts.h

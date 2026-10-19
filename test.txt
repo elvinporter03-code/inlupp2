@@ -1,41 +1,66 @@
 A
-Bok
-En mycket spännande bok
-150
-A
-Bok2
-En smått spännande bok
-150
-A
-Kaffekopp
-Smaskigt morgonkaffe
+CCZ
+Coca Cola Zerooo 
 10
 A
-Albatross
-En stor mf fågel
-10
-L
-A
-Flaska
-En flaska med saft
-67
-L
-D
-Bok
-Y
-L
+Glass
+En liter glass
+15
 E
-Flaska
-Flarran
-En flarra med saft
-76
-Y
+CCZ
+CCZ
+Coca Cola Zero
+10
+y
 L
-P
-S34
-Flarran
-24
 S
-Flarran
+CCZ
+P
+A01
+CCZ
+100
+P
+C95
+Glass
+50
+S
+Glass
+C
+R
+1
+Y
+C
+C
++
+2
+Glass
+3
+-
+2
+Glass
+1
+D
+CCZ
+Y
+A
+CC
+Coca Cola
+9
+P
+A01
+CC
+25
++
+2
+CC
+10
+=
+2
+O
+2
+S
+CC
+S
+Glass
 Q
-
+Y

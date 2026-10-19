@@ -49,7 +49,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
     char *name_old;
     char *name_new;
     size_t price;
-    //size_t cart_id;
+    size_t cart_id;
     char **results;
     size_t index;
     int cost;
@@ -121,7 +121,9 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
 
         case 'R':
             index = ask_question_int("Vilken kundvagn vill du ta bort? \n");
-            ioopm_remove_cart(cart_list, index, ht_n);
+            if(confirmation()){
+                ioopm_remove_cart(cart_list, index, ht_n);
+            }
             printf("The cart with id %zu has now been removed \n");
             break;
 
@@ -156,15 +158,20 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n)
             break;
 
         case 'Q':
-            running = false;
+            if(confirmation()){
+                running = false;
+            }
             break;
 
         default:
-            running = false;
+            if(confirmation()){
+                running = false;
+            }
             break;
         }
         free(ans);
     }
+    free_cart_list(cart_list);
 
 }
 
