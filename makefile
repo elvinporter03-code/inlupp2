@@ -15,6 +15,10 @@ app: frontend.c $(SHARED) $(HDRS)
 tests: backend_tests.c $(SHARED) $(HDRS)
 	$(CC) $(CFLAGS) backend_tests.c $(SHARED) -o tests -lcunit
 
+# Carts-tester
+carts_tests: carts_tests.c carts.c $(SHARED) carts.h $(HDRS)
+	$(CC) $(CFLAGS) carts_tests.c carts.c $(SHARED) -o carts_tests -lcunit
+
 clean:
 	rm -f app tests
 
@@ -23,5 +27,3 @@ run: app
 
 test: tests
 	./tests
-
-// $ gcc -std=gnu11 -Wall -Wextra -g     carts_tests.c carts.c backend.c hash_table.c linked_list.c     hash_table_iterator.c list_iterator.c utils.c     -o carts_tests -lcunit
