@@ -42,4 +42,5 @@ run: app
 	./app < test.txt
 
 test: tests
-	./tests
+	./tests 
+	./carts_tests
