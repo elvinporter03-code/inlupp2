@@ -323,7 +323,7 @@ void test_add()
     cart_list_t *cart_list = cart_list_create();
     ioopm_hash_table_t *ht_n = init();
     ioopm_hash_table_t *ht_sl =
-        ioopm_hash_table_create(string_knr_hash, string_compare);
+    ioopm_hash_table_create(string_knr_hash, string_compare);
 
     // Den första kundvagnen får ID 1.
     ioopm_create_cart(cart_list);
