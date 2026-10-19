@@ -212,7 +212,7 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     // Hämta all tidigare info om itemet
     s_t *item_s = lookup_htn(ht_n, name_old);
     char *to_free = item_s->item->name; //namn för att fria separat på rätt plats
- //hejsan
+    //hejsan hoppsan
     // skapar ny(?) info om  itemet
     merch_t *tmp = calloc(1, sizeof(merch_t));
     tmp->desc = desc;
