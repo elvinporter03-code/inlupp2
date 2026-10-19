@@ -27,4 +27,3 @@ Utils comes from Alvas C bootstrap labs
 ### Instructions follow when running
 
 ## Common.h contains all the information about the datastructure we used
-### hej
