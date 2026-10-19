@@ -49,7 +49,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, cart_list_t 
     char *name_old;
     char *name_new;
     size_t price;
-    //size_t cart_id;
+    size_t cart_id;
     char **results;
     bool running = true;
     while (running)
