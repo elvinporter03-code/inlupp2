@@ -11,7 +11,7 @@ HDRS = backend.h common.h linked_list.h list_iterator.h hash_table.h hash_table_
 app: frontend.c $(SHARED) $(HDRS)
 	$(CC) $(CFLAGS) frontend.c $(SHARED) -o app
 
-# Testerna (egen main i backend_tests.c)
+# Testerna 
 tests: backend_tests.c $(SHARED) $(HDRS)
 	$(CC) $(CFLAGS) backend_tests.c $(SHARED) -o tests -lcunit
 
