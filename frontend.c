@@ -51,6 +51,9 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, cart_list_t 
     size_t price;
     size_t cart_id;
     char **results;
+    size_t index;
+    int cost;
+    size_t amount;
     bool running = true;
     while (running)
     {
@@ -104,7 +107,7 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, cart_list_t 
         case 'P':
             shelf = ask_question_shelf("Vilken hylla vill du lägga till på \n");
             name = ask_question_string("Vilket item vill du lägga till fler av? \n");
-            size_t amount = ask_question_int("Hur många vill du fylla på med? \n");
+            amount = ask_question_int("Hur många vill du fylla på med? \n");
             replenish(ht_sl, ht_n, name, shelf, amount);
             free(name);
             free(shelf);
@@ -116,51 +119,58 @@ void main_loop(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, cart_list_t 
             break;
 
         case 'R':
-            size_t index = ask_question_int("Vilken kundvagn vill du ta bort? \n");
-            ioopm_remove_cart(cart_list, index, ht_n);
+            index = ask_question_int("Vilken kundvagn vill du ta bort? \n");
+            if(confirmation()){
+                ioopm_remove_cart(cart_list, index, ht_n);
+            }
             printf("The cart with id %zu has now been removed \n");
             break;
 
         case '+':
-            size_t index = ask_question_int("Vilken kundvagn vill du lägga till varor i? \n");
+            index = ask_question_int("Vilken kundvagn vill du lägga till varor i? \n");
             name = ask_question_string("Vilken vara vill du lägga till? \n");
-            size_t amount = ask_question_int("Hur många varor vill du lägga till? \n");
+            amount = ask_question_int("Hur många varor vill du lägga till? \n");
             ioopm_add_to_cart(cart_list, index, name, amount, ht_n);
             printf("%zu items of %s has now been added to cart %zu \n", amount, name, index);
             free(name);
             break;
 
         case '-':
-            size_t index = ask_question_int("Vilken kundvagn vill du ta bort varor från? \n");
+            index = ask_question_int("Vilken kundvagn vill du ta bort varor från? \n");
             name = ask_question_string("Vilken vara vill du ta bort? \n");
-            size_t amount = ask_question_int("Hur många varor vill du ta bort? \n");
+            amount = ask_question_int("Hur många varor vill du ta bort? \n");
             ioopm_remove_from_cart(cart_list, index, name, amount, ht_n);
             printf("%zu items of %s has now been removed from cart %zu \n", amount, name, index);
             free(name);
             break;
 
         case '=':
-            size_t index = ask_question_int("Vilken kundvagn vill beräkna kostnaden av? \n");
-            int cost = ioopm_calc_costs(cart_list, index, ht_n);
+            index = ask_question_int("Vilken kundvagn vill beräkna kostnaden av? \n");
+            cost = ioopm_calc_costs(cart_list, index, ht_n);
             printf("the total cost of the items in cart %zu is: %d \n", index, cost);
             break;
 
         case 'O':
-            size_t index = ask_question_int("Vilken kundvagn vill du checka ut? \n");
+            index = ask_question_int("Vilken kundvagn vill du checka ut? \n");
             ioopm_checkout(cart_list, index, ht_n);
             printf("the cart %zu is now checked out, the total cost is: %d \n", index, cost);
             break;
 
         case 'Q':
-            running = false;
+            if(confirmation()){
+                running = false;
+            }
             break;
 
         default:
-            running = false;
+            if(confirmation()){
+                running = false;
+            }
             break;
         }
         free(ans);
     }
+    free_cart_list(cart_list);
 
 }
 

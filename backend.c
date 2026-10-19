@@ -22,6 +22,7 @@ static void destroy_loc_pairs(ioopm_list_t *list)
         elem_t tmp = ioopm_list_iterator_current(it);
         loc_pair_t *pair = tmp.p; //Hämtar och castar om pekaren till loc_pair_t
 
+        
         free(pair->shelf); //friar strängen inuti loc_pairet först
         free(pair); //sedan resten
         ioopm_list_iterator_advance(it);
@@ -114,6 +115,7 @@ static s_t *S_create(char *name, char *desc_in, size_t price)
 void add_merchandise(ioopm_hash_table_t *ht_n, char *name, char *desc, size_t price)
 {
 
+
     // lägg in den i ht_n med name som nyckel ger felmeddelande om den redan finns
     bool exists = ioopm_hash_table_has_key(ht_n, string_elem(name));
     if (exists)
@@ -198,8 +200,10 @@ void remove_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, cha
     }
 
     char *to_free = item_s->item->name; //Sparar undan nyckeln och namn-elemntet i S för att fria manuellt efteråt
+    char *name_copy = strdup(name); // Inte elegant men det funkar
     destroy_entry_htn(item_s, true); //Tar bort och friar allt utrymme 
-    ioopm_hash_table_remove(ht_n, string_elem(name), &tmp);
+    ioopm_hash_table_remove(ht_n, string_elem(name_copy), &tmp);
+    free(name_copy);
     free(to_free);
 }
 
@@ -211,21 +215,22 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     s_t *item_s = lookup_htn(ht_n, name_old);
     char *to_free = item_s->item->name; //namn för att fria separat på rätt plats
 
-    // skapar ny(?) info om  itemet
-    merch_t *tmp = calloc(1, sizeof(merch_t));
-    tmp->desc = desc;
-    tmp->name = name_new;
-    tmp->price = price;
-    tmp->stock = item_s->item->stock;
-
-    // skapar nya itemet
-    ioopm_list_t *locs = item_s->locations;
-    s_t *to_insert = calloc(1, sizeof(s_t));
-    to_insert->item = tmp;
-    to_insert->locations = locs;
 
     if (!string_compare(string_elem(name_new), string_elem(name_old)))
     {
+        // skapar ny(?) info om  itemet
+        merch_t *tmp1 = calloc(1, sizeof(merch_t));
+        tmp1->desc = desc;
+        tmp1->name = name_new;
+        tmp1->price = price;
+        tmp1->stock = item_s->item->stock;
+    
+        // skapar nya itemet
+        ioopm_list_t *locs = item_s->locations;
+        s_t *to_insert = calloc(1, sizeof(s_t));
+        to_insert->item = tmp1;
+        to_insert->locations = locs;
+    
         // tar bort alla instanser av den gamla varan utifall namnet ändrats
         elem_t tmp;
         destroy_entry_htn(item_s, false);
@@ -244,10 +249,16 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
             }
             ioopm_list_iterator_destroy(it);
         }
+        ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert));
         free(to_free);
     }
+    else{
+        free(item_s->item->desc);
+        item_s->item->desc = desc;
+        item_s->item->price = price;
+        free(name_new);
+    }
     // Uppdaterar eller sätter in nya beroende på om namnet ändrats
-    ioopm_hash_table_insert(ht_n, string_elem(name_new), ptr_elem(to_insert));
 }
 
 
