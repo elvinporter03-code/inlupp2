@@ -46,6 +46,9 @@ void show_stock(ioopm_hash_table_t *ht_n, char *name);
 /// @param name 
 void replenish(ioopm_hash_table_t *ht_sl, ioopm_hash_table_t *ht_n, char *name, char *shelf, size_t amount);
 
+/// @brief Förstör allt och friar allt
+/// @param ht_n 
+/// @param ht_sl 
 void destructor(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl);
 
 size_t string_knr_hash(elem_t key);

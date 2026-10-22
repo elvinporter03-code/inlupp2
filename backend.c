@@ -215,7 +215,6 @@ void edit_merchandise(ioopm_hash_table_t *ht_n, ioopm_hash_table_t *ht_sl, char 
     s_t *item_s = lookup_htn(ht_n, name_old);
     char *to_free = item_s->item->name; //namn för att fria separat på rätt plats
 
-
     if (!string_compare(string_elem(name_new), string_elem(name_old)))
     {
         // skapar ny(?) info om  itemet
